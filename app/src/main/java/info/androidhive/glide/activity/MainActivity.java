@@ -411,7 +411,19 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
+    ////Sample code
+	private void initialisedListItems(){
+		ArrayList<DataModel> dataModelList = new ArrayList<DataModel>();
+		for(int index=0;index<Constant.IDENTIFIER_LIST.length;index++){
+			DataModel dataModel=new DataModel(Constant.URL_LINK[index], Constant.HEADER_LIST[index], Constant.IDENTIFIER_LIST[index],Constant.QUERY_PARAMETER[index]);
+			SectionDataModel sectionDataModel = new SectionDataModel();
+			sectionDataModel.setHeaderTitle(Constant.HEADER_LIST[index]);
+			sectionDataModel.setMovieIdentifier(Constant.IDENTIFIER_LIST[index]);
+			sectionDataModel.setAllItemsInSection(new ArrayList<Movie>());
+			dataModel.setSectionDataModel(sectionDataModel);
+			dataModelList.add(dataModel);
+		}
+	}
 
 
 }
@@ -420,5 +432,73 @@ interface DataFetchListener{
     void onDataFetchSuccessfull();
 
 }
+
+
+public class DataModel {
+
+	private SectionDataModel sectionDataModel;
+	private SingleItemModel singleItemModel;
+	private String urlLink;
+	private String category;
+	private String identifier;
+	private String queryParameter;
+	public DataModel(String urlLink, String category, String identifier,String queryParameter) {
+		super();
+		this.urlLink = urlLink;
+		this.category = category;
+		this.identifier = identifier;
+		this.queryParameter = queryParameter;
+	}
+	
+	
+	public String getQueryParameter() {
+		return queryParameter;
+	}
+
+
+	public void setQueryParameter(String queryParameter) {
+		this.queryParameter = queryParameter;
+	}
+
+
+	public String getIdentifier() {
+		return identifier;
+	}
+	public void setIdentifier(String identifier) {
+		this.identifier = identifier;
+	}
+	public SectionDataModel getSectionDataModel() {
+		return sectionDataModel;
+	}
+	public void setSectionDataModel(SectionDataModel sectionDataModel) {
+		this.sectionDataModel = sectionDataModel;
+	}
+	public SingleItemModel getSingleItemModel() {
+		return singleItemModel;
+	}
+	public void setSingleItemModel(SingleItemModel singleItemModel) {
+		this.singleItemModel = singleItemModel;
+	}
+	public String getUrlLink() {
+		return urlLink;
+	}
+	public void setUrlLink(String urlLink) {
+		this.urlLink = urlLink;
+	}
+	public String getCategory() {
+		return category;
+	}
+	public void setCategory(String category) {
+		this.category = category;
+	}
+	
+	
+}
+
+	public static final String[] IDENTIFIER_LIST = { "Latest", "Best" };
+	public static final String[] QUERY_PARAMETER = { "gerbe", "gerbe" };
+	public static final String[] HEADER_LIST = { "HLatest", "HBest" };
+	public static final String[] URL_LINK = { "LINKLatest", "LINKBest" };
+
 
 
