@@ -4,8 +4,8 @@
     <color name="viewBg">#000000</color>
     <color name="album_title">#000000</color>
 
-    <color name="colorPrimary">#EF6C00</color>
-    <color name="colorPrimaryDark">#ca5c01</color>
+    <color name="colorPrimary">#49b207</color>
+    <color name="colorPrimaryDark">#008100</color>
     <color name="textColorPrimary">#000000</color>
     <color name="windowBackground">#FFFFFF</color>
     <color name="navigationBarColor">#000000</color>

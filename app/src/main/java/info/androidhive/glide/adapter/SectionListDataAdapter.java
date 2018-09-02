@@ -90,6 +90,9 @@ public class SectionListDataAdapter extends RecyclerView.Adapter<SectionListData
                     .into(holder.itemImage);
         }else{
 
+            holder.progressBar.setVisibility(View.GONE);
+            holder.relativeLayout.setVisibility(View.GONE);
+            holder.itemImage.setVisibility(View.VISIBLE);
             RequestOptions myOptions = new RequestOptions()
                     .placeholder(R.drawable.if_additional_icons).diskCacheStrategy(DiskCacheStrategy.NONE).centerCrop();
             Glide.with(mContext)

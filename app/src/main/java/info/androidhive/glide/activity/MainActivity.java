@@ -21,6 +21,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.github.ybq.android.spinkit.style.DoubleBounce;
+import com.github.ybq.android.spinkit.style.ThreeBounce;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,6 +34,7 @@ import java.util.List;
 import info.androidhive.glide.R;
 import info.androidhive.glide.adapter.RecyclerViewDataAdapter;
 import info.androidhive.glide.app.AppController;
+import info.androidhive.glide.helper.Helper;
 import info.androidhive.glide.model.DataModel;
 import info.androidhive.glide.model.Movie;
 import info.androidhive.glide.model.SectionDataModel;
@@ -43,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;
 
 
-    ArrayList<DataModel> dataModelArrayList;
+    ArrayList<DataModel> dataModelArrayList=null;
 
     private ProgressBar progressBar;
     private RelativeLayout relativeLayout;
@@ -61,8 +63,8 @@ public class MainActivity extends AppCompatActivity {
         progressBar = (ProgressBar) findViewById(R.id.spin_kit);
         relativeLayout = (RelativeLayout) findViewById(R.id.spinKitLayout);
 
-        DoubleBounce doubleBounce = new DoubleBounce();
-        progressBar.setIndeterminateDrawable(doubleBounce);
+        ThreeBounce threeBounce = new ThreeBounce();
+        progressBar.setIndeterminateDrawable(threeBounce);
 
 
         if (toolbar != null) {
@@ -121,7 +123,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        //Toast.makeText(getApplicationContext(),"On Pause "+dialogFragment,Toast.LENGTH_SHORT).show();
         if (dialogFragment != null) {
             dialogFragment.dismiss();
         }
@@ -136,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
         synchronized (lock) {
             flag++;
 
-            if (flag == Constant.MovieCategory.CATEGORY_TOTAL_COUNT) {
+            if (flag == Constant.IDENTIFIER_LIST.length+1) {
 
                 displayFetchedMovieItemAsList();
             }
@@ -144,8 +145,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void populateMovieData() {
-
-        for (DataModel dataModel : initialisedListItems()) {
+        initialisedListItems();
+        for (DataModel dataModel : dataModelArrayList) {
             if (dataModel != null) {
                 fetchMovieData(dataModel);
             }
@@ -158,14 +159,25 @@ public class MainActivity extends AppCompatActivity {
 
     private void populateMovieGerne() {
         DataModel dataModel = new DataModel();
+        SectionDataModel sectionDataModel = new SectionDataModel();
+        sectionDataModel.setHeaderTitle("Browse By Genre");
+        sectionDataModel.setMovieIdentifier(Constant.MovieCategory.MOVIE_GERNE);
+        dataModel.setSectionDataModel(sectionDataModel);
         List<String> movieGerneList = Arrays.asList(getResources().getStringArray(R.array.genre_array));
+        ArrayList<Movie> movieGenreList = new ArrayList<Movie>();
         for (String movieGerne : movieGerneList) {
-            Movie movie = new Movie();
-            movie.setTitle(movieGerne);
-            movie.setId(movieGerne.toLowerCase());
-            movie.setMediumCoverImage(null);
-            dataModel.getSectionDataModel().getAllItemsInSection().add(movie);
+            if(movieGenreList.size()!=Constant.MAX_ITEM_EACH_ROW) {
+                Movie movie = new Movie();
+                movie.setTitle(movieGerne);
+                movie.setId(movieGerne.toLowerCase());
+                movie.setMediumCoverImage(null);
+                movieGenreList.add(movie);
+            }else{
+                break;
+            }
         }
+        dataModel.getSectionDataModel().setAllItemsInSection(movieGenreList);
+        dataModelArrayList.add(2,dataModel);
         makeCount();
     }
 
@@ -204,18 +216,19 @@ public class MainActivity extends AppCompatActivity {
 
 
     private ArrayList<DataModel> initialisedListItems() {
-        ArrayList<DataModel> dataModelList = new ArrayList<DataModel>();
+
         for (int index = 0; index < Constant.IDENTIFIER_LIST.length; index++) {
-            DataModel dataModel = new DataModel(Constant.URL_LINK[index], Constant.HEADER_LIST[index], Constant.IDENTIFIER_LIST[index], Constant.QUERY_PARAMETER[index]);
+            ArrayList<Movie> movieArr = new ArrayList<Movie>();
+            DataModel dataModel = new DataModel(Constant.URL_LINK[index], Constant.HEADER_LIST[index], Constant.IDENTIFIER_LIST[index], Constant.QUERY_PARAMETER[index], Helper.getFullHeaderName(Constant.HEADER_LIST[index]));
             SectionDataModel sectionDataModel = new SectionDataModel();
-            sectionDataModel.setHeaderTitle(Constant.HEADER_LIST[index]);
+            sectionDataModel.setHeaderTitle(Helper.getFullHeaderName(Constant.HEADER_LIST[index]));
             sectionDataModel.setMovieIdentifier(Constant.IDENTIFIER_LIST[index]);
-            sectionDataModel.setAllItemsInSection(new ArrayList<Movie>());
+            sectionDataModel.setAllItemsInSection(movieArr);
             dataModel.setSectionDataModel(sectionDataModel);
-            dataModelList.add(dataModel);
+            dataModelArrayList.add(dataModel);
 
         }
-        return dataModelList;
+        return dataModelArrayList;
     }
 
 
@@ -225,6 +238,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(String response) {
+                try{
                 Uri uri = Uri.parse(dataModel.getUrlLink());
                 String queryParameter = uri.getQueryParameter(dataModel.getQueryParameter());
                 if (queryParameter != null) {
@@ -240,7 +254,9 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
-
+            }catch(Exception exception){
+                exception.printStackTrace();
+            }
             }
         }, new Response.ErrorListener() {
 
@@ -277,8 +293,3 @@ interface DataFetchListener {
     void onDataFetchSuccessfull();
 
 }
-
-
-
-
-

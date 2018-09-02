@@ -22,6 +22,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.github.ybq.android.spinkit.style.DoubleBounce;
+import com.github.ybq.android.spinkit.style.ThreeBounce;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -62,8 +63,8 @@ public class ListMovieItem extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         progressBar = (ProgressBar) findViewById(R.id.spin_kit);
         relativeLayout = (RelativeLayout) findViewById(R.id.spinKitLayout);
-        DoubleBounce doubleBounce = new DoubleBounce();
-        progressBar.setIndeterminateDrawable(doubleBounce);
+        ThreeBounce threeBounce = new ThreeBounce();
+        progressBar.setIndeterminateDrawable(threeBounce);
 
 
         pDialog = new ProgressDialog(this);

@@ -1,7 +1,6 @@
 package info.androidhive.glide.adapter;
 
 
-
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,26 +10,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
-
-
 
 import java.util.ArrayList;
 
 import info.androidhive.glide.R;
 import info.androidhive.glide.activity.ListMovieItem;
 import info.androidhive.glide.activity.MovieGerneListLayout;
+import info.androidhive.glide.model.DataModel;
 import info.androidhive.glide.model.Movie;
-import info.androidhive.glide.model.SectionDataModel;
 import info.androidhive.glide.util.Constant;
 
 public class RecyclerViewDataAdapter extends RecyclerView.Adapter<RecyclerViewDataAdapter.ItemRowHolder> {
 
-    private ArrayList<SectionDataModel> dataList;
+    private ArrayList<DataModel> dataList;
     private Context mContext;
     ArrayList<Movie> movieList;
 
-    public RecyclerViewDataAdapter(Context context, ArrayList<SectionDataModel> dataList) {
+    public RecyclerViewDataAdapter(Context context, ArrayList<DataModel> dataList) {
         this.dataList = dataList;
         this.mContext = context;
     }
@@ -45,15 +41,15 @@ public class RecyclerViewDataAdapter extends RecyclerView.Adapter<RecyclerViewDa
     @Override
     public void onBindViewHolder(ItemRowHolder itemRowHolder, int i) {
 
-        final String sectionName = dataList.get(i).getHeaderTitle();
-        final String movieIdentifier = dataList.get(i).getMovieIdentifier();
+        final String sectionName = dataList.get(i).getSectionDataModel().getHeaderTitle();
+        final String movieIdentifier = dataList.get(i).getSectionDataModel().getMovieIdentifier();
 
         movieList = new ArrayList<Movie>();
 
-        ArrayList<Movie> singleSectionItems = dataList.get(i).getAllItemsInSection();
+        ArrayList<Movie> singleSectionItems = dataList.get(i).getSectionDataModel().getAllItemsInSection();
 
         itemRowHolder.itemTitle.setText(sectionName);
-        itemRowHolder.btnMore.setTag(""+sectionName);
+        itemRowHolder.btnMore.setTag("" + sectionName);
 
         SectionListDataAdapter itemListDataAdapter = new SectionListDataAdapter(mContext, singleSectionItems);
 
@@ -74,7 +70,6 @@ public class RecyclerViewDataAdapter extends RecyclerView.Adapter<RecyclerViewDa
              public boolean onTouch(View view, MotionEvent motionEvent) {
                  return false;
              }
-
              @Override
             public boolean onTouch(View v, MotionEvent event) {
                 int action = event.getAction();
@@ -99,18 +94,16 @@ public class RecyclerViewDataAdapter extends RecyclerView.Adapter<RecyclerViewDa
             public void onClick(View v) {
 
 
-                if(movieIdentifier!=null && movieIdentifier.equals(Constant.MovieCategory.MOVIE_GERNE)){
+                if (movieIdentifier != null && movieIdentifier.equals(Constant.MovieCategory.MOVIE_GERNE)) {
 
                     Intent intent = new Intent(v.getContext(), MovieGerneListLayout.class);
                     v.getContext().startActivity(intent);
-                }else{
-                    //Toast.makeText(v.getContext(), "click event on more, "+sectionName , Toast.LENGTH_SHORT).show();
+                } else {
+
                     Intent intent = new Intent(v.getContext(), ListMovieItem.class);
                     intent.putExtra("CATEGORY", movieIdentifier);
                     v.getContext().startActivity(intent);
                 }
-
-
 
 
             }
@@ -130,8 +123,8 @@ public class RecyclerViewDataAdapter extends RecyclerView.Adapter<RecyclerViewDa
                 .into(feedListRowHolder.thumbView);*/
     }
 
-    public void populateMovie (ArrayList<Movie> singleSectionItems) {
-        for(Movie movie:singleSectionItems){
+    public void populateMovie(ArrayList<Movie> singleSectionItems) {
+        for (Movie movie : singleSectionItems) {
             movieList.add(movie);
         }
     }
@@ -150,13 +143,12 @@ public class RecyclerViewDataAdapter extends RecyclerView.Adapter<RecyclerViewDa
         protected Button btnMore;
 
 
-
         public ItemRowHolder(View view) {
             super(view);
 
             this.itemTitle = (TextView) view.findViewById(R.id.itemTitle);
             this.recycler_view_list = (RecyclerView) view.findViewById(R.id.recycler_view_list);
-            this.btnMore= (Button) view.findViewById(R.id.btnMore);
+            this.btnMore = (Button) view.findViewById(R.id.btnMore);
 
 
         }

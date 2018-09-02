@@ -46,8 +46,10 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 
 import com.bumptech.glide.request.target.Target;
+import com.github.ybq.android.spinkit.style.CubeGrid;
 import com.github.ybq.android.spinkit.style.DoubleBounce;
 import com.github.ybq.android.spinkit.style.ThreeBounce;
+import com.github.ybq.android.spinkit.style.Wave;
 import com.manuelpeinado.fadingactionbar.FadingActionBarHelper;
 import com.thefinestartist.finestwebview.FinestWebView;
 
@@ -139,9 +141,10 @@ public class MovieDeatils extends AppCompatActivity {
             toolbar.setTitle("");
 
         }
-        DoubleBounce doubleBounce = new DoubleBounce();
-        progressBar.setIndeterminateDrawable(doubleBounce);
-        ThreeBounce threeBounce=new ThreeBounce();
+
+        ThreeBounce threeBounce = new ThreeBounce();
+        ThreeBounce threeBounceTransition = new ThreeBounce();
+        progressBar.setIndeterminateDrawable(threeBounceTransition);
         progressBarForTopImage.setIndeterminateDrawable(threeBounce);
         linearLayout.setVisibility(View.GONE);
         recyclerViewForSimilarMovies=(RecyclerView) findViewById(R.id.similar_movies_recycler_view);
@@ -401,10 +404,7 @@ public class MovieDeatils extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.search_movies) {
 
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }

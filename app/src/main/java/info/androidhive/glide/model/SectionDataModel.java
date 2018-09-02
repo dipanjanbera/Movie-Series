@@ -48,5 +48,12 @@ public class SectionDataModel {
         this.allItemsInSection = allItemsInSection;
     }
 
-
+    @Override
+    public String toString() {
+        return "SectionDataModel{" +
+                "headerTitle='" + headerTitle + '\'' +
+                ", movieIdentifier='" + movieIdentifier + '\'' +
+                ", allItemsInSection=" + allItemsInSection +
+                '}';
+    }
 }

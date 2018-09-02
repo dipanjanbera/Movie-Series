@@ -11,6 +11,9 @@ public class Helper {
         if(categoty.equalsIgnoreCase(Constant.MovieCategory.ACTION)){
             return Constant.ListDisplay.ACTION_MOVIE_URL;
         }
+        if(categoty.equalsIgnoreCase(Constant.MovieCategory.MOVIE_3D)){
+            return Constant.ListDisplay.MOVIE_3D;
+        }
         if(categoty.equalsIgnoreCase(Constant.MovieCategory.HORROR)){
             return Constant.ListDisplay.HORROR_MOVIE_URL;
         }
@@ -43,5 +46,9 @@ public class Helper {
             return Constant.ListDisplay.BROWSE_MOVIE_BY_GERNE+gerne.toLowerCase()+"&page=";
         }
         return null;
+    }
+
+    public static String getFullHeaderName(String category){
+        return Constant.MovieCategory.PREFIX+category+ Constant.MovieCategory.SUFFIX;
     }
 }

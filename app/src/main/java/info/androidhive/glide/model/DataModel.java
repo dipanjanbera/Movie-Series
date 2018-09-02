@@ -11,14 +11,18 @@ public class DataModel {
     private String category;
     private String identifier;
     private String queryParameter;
-    public DataModel(String urlLink, String category, String identifier,String queryParameter) {
+    private String header;
+    public DataModel(String urlLink, String category, String identifier,String queryParameter,String header) {
         super();
         this.urlLink = urlLink;
         this.category = category;
         this.identifier = identifier;
         this.queryParameter = queryParameter;
+        this.header=header;
     }
 
+    public DataModel() {
+    }
 
     public String getQueryParameter() {
         return queryParameter;
@@ -61,5 +65,16 @@ public class DataModel {
         this.category = category;
     }
 
-
+    @Override
+    public String toString() {
+        return "DataModel{" +
+                "sectionDataModel=" + sectionDataModel +
+                ", singleItemModel=" + singleItemModel +
+                ", urlLink='" + urlLink + '\'' +
+                ", category='" + category + '\'' +
+                ", identifier='" + identifier + '\'' +
+                ", queryParameter='" + queryParameter + '\'' +
+                ", header='" + header + '\'' +
+                '}';
+    }
 }

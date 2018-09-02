@@ -7,6 +7,9 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,6 +28,8 @@ import info.androidhive.glide.model.SectionDataModel;
 public class MovieGerneListLayout extends AppCompatActivity {
     private Toolbar toolbar;
     private RecyclerView recyclerView;
+    private ProgressBar progressBar;
+    private RelativeLayout relativeLayout;
     private MovieGerneListAdapter movieGerneListAdapter;
     private List<String> movieGerneList = new ArrayList<>();
 
@@ -32,6 +37,10 @@ public class MovieGerneListLayout extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        progressBar = (ProgressBar) findViewById(R.id.spin_kit);
+        relativeLayout = (RelativeLayout) findViewById(R.id.spinKitLayout);
+        progressBar.setVisibility(View.GONE);
+        relativeLayout.setVisibility(View.GONE);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         recyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);

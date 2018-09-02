@@ -4,11 +4,5 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".MainActivity">
 
-    <item
-        android:id="@+id/imdbLink"
-        android:orderInCategory="300"
-        android:title="Imdb Link"
-        android:icon="@drawable/menu_imdb_64"
-        app:showAsAction="ifRoom"></item>
 
 </menu>
