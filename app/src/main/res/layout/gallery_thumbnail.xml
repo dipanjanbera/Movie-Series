@@ -18,7 +18,7 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="301dp">
+            android:layout_height="314dp">
 
             <ImageView
                 android:id="@+id/thumbnail"
@@ -56,18 +56,10 @@
                 android:textColor="#ffffff"
                 android:overScrollMode="never"
                 android:maxLines="1"
-                android:textSize="@dimen/album_title" />
 
-            <ImageView
-                android:id="@+id/overflow"
-                android:layout_width="@dimen/ic_album_overflow_width"
-                android:layout_height="@dimen/ic_album_overflow_height"
-                android:layout_alignParentRight="true"
-                android:layout_below="@id/thumbnail"
-                android:layout_marginTop="@dimen/ic_album_overflow_margin_top"
-                android:background="#000000"
+                style="@style/CodeFont_Movie_Title_Headers"/>
 
-                android:scaleType="centerCrop" />
+
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -75,6 +67,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:background="#000000"
+                android:id="@+id/rating"
                 android:layout_below="@+id/title">
 
                 <ImageView
@@ -95,7 +88,32 @@
                     android:layout_toRightOf="@+id/imageView2"
                     android:text="TextView"
                     android:textColor="#ffffff"
-                    android:textSize="12sp" />
+                    android:textSize="12dp"
+                    android:maxLines="1"
+                    style="@style/CodeFont_Movie_Title_DESCRIPTION"/>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:paddingBottom="0dp"
+                    android:layout_below="@+id/imageView2">
+
+                    <TextView
+                        android:id="@+id/textView17"
+                        style="@style/CodeFont_Movie_Title_DESCRIPTION"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        android:maxLines="1"
+
+                        android:text="Ghjj hzbhc njhhczx njksn" />
+                </RelativeLayout>
+
+
             </RelativeLayout>
 
         </RelativeLayout>

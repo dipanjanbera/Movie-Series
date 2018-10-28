@@ -8,8 +8,16 @@ import info.androidhive.glide.helper.Helper;
 
 public interface Constant {
 
-    String BASE_URL = "https://yts-am.prox.fun";
+    String BASE_URL = "https://yts.am";
     String TAG = "Application";
+    String MyPREFERENCES = "MyPrefs" ;
+    String PREF_ENDPOINT = "ENDPOINT";
+    String SOURCE_HOME = "HOME";
+    String SOURCE_SEARCH = "SEARCH";
+    String SOURCE_CATEGOTY_LIST = "CATEGORY_LIST";
+    String INTENT_EXTRA_BACK_BUTTON_PRESS = "BACK_BUTTON_PRESS";
+    String ACTIVITY_NAME =  "Activity_Name";
+
 
     interface RowDisplay {
         String ACTION_MOVIE_URL = BASE_URL + "/api/v2/list_movies.json?limit=" + MAX_ITEM_EACH_ROW + "&sort_by=rating&order_by=desc&genre=action&with_rt_ratings=true";
@@ -21,6 +29,7 @@ public interface Constant {
         String LATEST_MOVIE = BASE_URL + "/api/v2/list_movies.json?limit=" + MAX_ITEM_EACH_ROW + "&genre=all";
         String BEST_MOVIES = BASE_URL + "/api/v2/list_movies.json?minimum_rating=8&sort_by=rating&limit=" + MAX_ITEM_EACH_ROW;
         String MOVIE_3D= BASE_URL+"/api/v2/list_movies.json?limit=" + MAX_ITEM_EACH_ROW + "&sort_by=rating&order_by=desc&with_rt_ratings=true&quality=3D";
+        String POPULAR_DOWNLOAD=BASE_URL+"/api/v2/list_movies.json?sort_by=download_count&limit="+MAX_ITEM_EACH_ROW;
 
     }
 
@@ -36,25 +45,36 @@ public interface Constant {
         String BROWSE_MOVIE_BY_GERNE = BASE_URL + "/api/v2/list_movies.json?genre=";
         String SEARCH_MOVIE = BASE_URL + "/api/v2/list_movies.json?";
         String MOVIE_3D = BASE_URL + "/api/v2/list_movies.json?sort_by=rating&order_by=desc&with_rt_ratings=true&quality=3D&page=";
+        String POPULAR_DOWNLOAD=BASE_URL+"/api/v2/list_movies.json?sort_by=download_count&limit="+MAX_ITEM_EACH_ROW+"&page=";
 
     }
 
     String[] IDENTIFIER_LIST = {MovieCategory.LATEST_MOVIES,
+            MovieCategory.MOVIE_POPULAR_DOWNLOAD,
             MovieCategory.BEST_MOVIES_RATING_ABOVE,
             MovieCategory.MOVIE_3D};
 
 
     String[] QUERY_PARAMETER = {"genre",
+            "sort_by",
             "minimum_rating",
-            "quality"};
+            "quality",
+            };
 
-    String[] HEADER_LIST = {MovieCategory.LATEST_MOVIES,
+   /*String[] HEADER_LIST = {MovieCategory.LATEST_MOVIES,
             MovieCategory.BEST_MOVIES_RATING_ABOVE,
-            MovieCategory.MOVIE_3D};
+            MovieCategory.MOVIE_3D};*/
+
+    String[] HEADER_LIST = {Header.LATEST_MOVIE,
+            Header.POPULAR_DOWNLOAD,
+            Header.TOP_MOVIES,
+            Header.MOVIES_3D};
 
     String[] URL_LINK = {RowDisplay.LATEST_MOVIE,
+            RowDisplay.POPULAR_DOWNLOAD,
             RowDisplay.BEST_MOVIES,
-            RowDisplay.MOVIE_3D};
+            RowDisplay.MOVIE_3D,
+    };
 
     int MAX_ITEM_EACH_ROW = 6;
 
@@ -75,11 +95,19 @@ public interface Constant {
         String BEST_MOVIES_RATING_ABOVE = "8";
         String MOVIE_GERNE = "gerne";
         String MOVIE_3D="3D";
+        String MOVIE_POPULAR_DOWNLOAD="download_count";
         int CATEGORY_TOTAL_COUNT = 9;
         String PREFIX = "Best of ";
         String SUFFIX = " Movies";
     }
 
+    interface Header{
+        String LATEST_MOVIE = "Latest Movies";
+        String TOP_MOVIES = "Top Movies";
+        String GENRE = "Browser By Genre";
+        String MOVIES_3D = "Top 3D Movies";
+        String POPULAR_DOWNLOAD="Popular Download";
+    }
 
 
     interface TagConstant {
@@ -110,9 +138,16 @@ public interface Constant {
         String TORRENT_URL = "url";
         String TORRENT_QUALITY = "quality";
         String TORRENT_SIZE = "size";
+        String TORRENT_HASH = "hash";
+        String TORRENT_SEEDS = "seeds";
+        String TORRENT_PEERS = "peers";
+        String MOVIE_COUNT="movie_count";
+
 
 
     }
+
+    String[] colorArr = {"#fb8c00","#f4e003","#ffd600","#ff6d00","#ab47bc","#aeea00"};
 
 
 }

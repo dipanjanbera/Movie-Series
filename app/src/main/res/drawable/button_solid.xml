@@ -6,13 +6,8 @@
         android:bottomLeftRadius="5dp"
         android:bottomRightRadius="5dp"
         />
-    <gradient
-        android:gradientRadius="100"
-        android:centerX="35%"
-        android:centerY="50%"
-        android:startColor="#FFFF00"
-        android:endColor="#B7FF26"
-        android:type="radial"
+    <solid
+        android:color="#ffd900"
         />
 
     <stroke

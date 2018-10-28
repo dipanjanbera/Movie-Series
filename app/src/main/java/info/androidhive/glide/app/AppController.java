@@ -1,11 +1,21 @@
 package info.androidhive.glide.app;
 
 import android.app.Application;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
+import com.thefinestartist.finestwebview.FinestWebViewActivity;
+
+import java.util.List;
 
 /**
  * Created by Lincoln on 04/04/16.
@@ -28,6 +38,8 @@ public class AppController extends Application {
     public static synchronized AppController getInstance() {
         return mInstance;
     }
+
+
 
     public RequestQueue getRequestQueue() {
         if (mRequestQueue == null) {
@@ -53,4 +65,29 @@ public class AppController extends Application {
             mRequestQueue.cancelAll(tag);
         }
     }
+
+    public static void openMagneturi(String url, final Context c){
+        Log.e("TAG","open Magneturi magnet");
+
+        if(url.startsWith("magnet:")) {
+            Log.e("TAG","url starts with magnet");
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            browserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            PackageManager manager = c.getPackageManager();
+            List<ResolveInfo> infos = manager.queryIntentActivities(browserIntent, 0);
+            if (infos.size() > 0) {
+                c.startActivity(browserIntent);
+                Log.e("TAG","yes act to handle");
+            } else {
+                Toast.makeText(c,"No Torrent client found to perform this task",Toast.LENGTH_SHORT).show();
+
+
+            }
+        }else{
+            Log.e("TAG","url does not starts with magnet");
+
+        }
+    }
+
+
 }

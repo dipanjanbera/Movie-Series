@@ -1,17 +1,25 @@
 package info.androidhive.glide.activity;
 
+import android.app.DialogFragment;
+import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.TypedValue;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -21,7 +29,6 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.github.ybq.android.spinkit.style.DoubleBounce;
 import com.github.ybq.android.spinkit.style.ThreeBounce;
 
 import org.json.JSONArray;
@@ -35,6 +42,7 @@ import info.androidhive.glide.adapter.GalleryAdapter;
 import info.androidhive.glide.app.AppController;
 import info.androidhive.glide.helper.Helper;
 import info.androidhive.glide.model.Movie;
+import info.androidhive.glide.util.Constant;
 
 
 public class ListMovieItem extends AppCompatActivity {
@@ -47,8 +55,13 @@ public class ListMovieItem extends AppCompatActivity {
     private GalleryAdapter mAdapter;
     private RecyclerView recyclerView;
     private int pageCount=1;
-    private ProgressBar progressBar;
-    private RelativeLayout relativeLayout;
+    private ProgressBar progressBar,progressBarBottomPanel;
+    private RelativeLayout relativeLayout,relativeLayoutBottomPanel;
+    private CoordinatorLayout coordinatorLayout;
+    private SharedPreferences sharedpreferences;
+    int movieCount=0;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,13 +72,25 @@ public class ListMovieItem extends AppCompatActivity {
         endpoint= resolveEntryPoint();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        toolbar.setTitleTextAppearance(this,R.style.CodeFont_Movie_Details_Headers);
+        if(resolveActivityName()!=null){
+            getSupportActionBar().setTitle(resolveActivityName());
+        }
+
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         progressBar = (ProgressBar) findViewById(R.id.spin_kit);
+
         relativeLayout = (RelativeLayout) findViewById(R.id.spinKitLayout);
+
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
+
         ThreeBounce threeBounce = new ThreeBounce();
         progressBar.setIndeterminateDrawable(threeBounce);
 
+
+        //relativeLayoutBottomPanel.setVisibility(View.GONE);
+        // progressBarBottomPanel.setVisibility(View.GONE);
 
         pDialog = new ProgressDialog(this);
         movies = new ArrayList<Movie>();
@@ -73,7 +98,6 @@ public class ListMovieItem extends AppCompatActivity {
 
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getApplicationContext(), 2);
         recyclerView.setLayoutManager(mLayoutManager);
-        //recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, true));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(10), true));
         recyclerView.setAdapter(mAdapter);
@@ -84,9 +108,27 @@ public class ListMovieItem extends AppCompatActivity {
                 super.onScrollStateChanged(recyclerView, newState);
 
                 if (!recyclerView.canScrollVertically(1)) {
-                    //Toast.makeText(getApplicationContext(),"come here "+endpoint,Toast.LENGTH_LONG).show();
+        //           Toast.makeText(getApplicationContext(),""+movieCount,Toast.LENGTH_SHORT).show();
+
+                    final Snackbar snackBar = Snackbar.make(coordinatorLayout, "Fetching movie list...", Snackbar.LENGTH_INDEFINITE);
+                    Snackbar.SnackbarLayout layout = (Snackbar.SnackbarLayout) snackBar.getView();
+                    layout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary));
+
                     pageCount++;
-                    fetchImages(endpoint+pageCount);
+                    if(movieCount>(pageCount*15)){
+
+                        snackBar.show();
+                    }
+
+
+
+
+                    fetchImages(endpoint + pageCount, new ListFetchListerner() {
+                        @Override
+                        public void onSuccessFullFetch() {
+                            snackBar.dismiss();
+                        }
+                    });
 
                 }
             }
@@ -121,17 +163,33 @@ public class ListMovieItem extends AppCompatActivity {
             }
         }));
 
-        fetchImages(endpoint+pageCount);
+
+        fetchImages(endpoint + pageCount, new ListFetchListerner() {
+            @Override
+            public void onSuccessFullFetch() {
+              //  Toast.makeText(getApplicationContext(),"come dddd "+movieCount,Toast.LENGTH_SHORT).show();
+                if(getIntent().getStringExtra("SEARCH")!=null){
+                    if(movieCount>1){
+                        getSupportActionBar().setTitle(movieCount+" Movies found");
+                    }else{
+                        getSupportActionBar().setTitle(movieCount+" Movie found");
+                    }
+
+                }
+            }
+        });
 
 
     }
+
+
 
     private int dpToPx(int dp) {
         Resources r = getResources();
         return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
     }
 
-    private void fetchImages(String url) {
+    private void fetchImages(String url, final ListFetchListerner listFetchListerner) {
 
         //pDialog.setMessage("Fetching Movie...");
         //pDialog.show();
@@ -146,84 +204,188 @@ public class ListMovieItem extends AppCompatActivity {
         //pDialog.setMessage("Loading...");wa
         //pDialog.show();
 
-            StringRequest strReq = new StringRequest(Request.Method.GET,
-                    url, new Response.Listener<String>() {
+        StringRequest strReq = new StringRequest(Request.Method.GET,
+                url, new Response.Listener<String>() {
 
-                @Override
-                public void onResponse(String response) {
+            @Override
+            public void onResponse(String response) {
 
-                    //pDialog.hide();
-                    //movies.clear();
-                    progressBar.setVisibility(View.GONE);
-                    relativeLayout.setVisibility(View.GONE);
-                    populateImage(response.toString(),movies);
+                //pDialog.hide();
+                //movies.clear();
+                progressBar.setVisibility(View.GONE);
+                relativeLayout.setVisibility(View.GONE);
+                populateMovieObject(response.toString(),movies,listFetchListerner);
+                mAdapter.notifyDataSetChanged();
 
+            }
+        }, new Response.ErrorListener() {
 
-                    mAdapter.notifyDataSetChanged();
+            @Override
+            public void onErrorResponse(VolleyError error) {
 
-                }
-            }, new Response.ErrorListener() {
-
-                @Override
-                public void onErrorResponse(VolleyError error) {
-
-                    //pDialog.hide();
-                }
-            });
+                //pDialog.hide();
+            }
+        });
 
 
         // Adding request to request queue
+        strReq.setShouldCache(false);
         AppController.getInstance().addToRequestQueue(strReq);
     }
 
-        public void populateImage (String stg, ArrayList<Movie> movies) {
-           // Toast.makeText(this.getApplicationContext(),"come here ",Toast.LENGTH_SHORT).show();
 
-            try {
-                JSONObject jObj = new JSONObject(stg);
-                String city = jObj.getString("status_message");
-                System.out.println(city);
+    public void populateMovieObject (String stg, ArrayList<Movie> movies,ListFetchListerner listFetchListerner) {
+        // Toast.makeText(this.getApplicationContext(),"come here ",Toast.LENGTH_SHORT).show();
+        String constructGenreString = null;
+        try {
+            //Toast.makeText(this.getApplicationContext(),""+stg,Toast.LENGTH_SHORT).show();
+            JSONObject jObj = new JSONObject(stg);
+            JSONObject jObj1 = jObj.getJSONObject("data");
 
-                JSONObject jObj1 = jObj.getJSONObject("data");
+            String movieCount = jObj1.getString(Constant.TagConstant.MOVIE_COUNT);
+            if(movieCount!=null){
+                try{
+                    this.movieCount=Integer.parseInt(movieCount);
+                }catch (Exception e){
+
+                    e.printStackTrace();
+                }
+            }
+            if(jObj1.has("movies")){
                 JSONArray jArr = jObj1.getJSONArray("movies");
-                for (int i=0; i < jArr.length(); i++) {
-                    Movie movie=new Movie();
-                    JSONObject obj = jArr.getJSONObject(i);
-                    movie.setMediumCoverImage(obj.getString("large_cover_image"));
-                    movie.setTitle(obj.getString("title"));
-                    movie.setRating(obj.getString("rating"));
-                    movie.setYear(obj.getString("year"));
-                    movie.setRuntime(obj.getString("runtime"));
-                    movie.setId(obj.getString("id"));
+                if(jArr!=null && jArr.length()>0){
+                    for (int i=0; i < jArr.length(); i++) {
+                        Movie movie=new Movie();
+                        JSONObject obj = jArr.getJSONObject(i);
+                        movie.setMediumCoverImage(obj.getString("large_cover_image"));
+                        movie.setTitle(obj.getString("title"));
+                        movie.setRating(obj.getString("rating"));
+                        movie.setYear(obj.getString("year"));
+                        movie.setRuntime(obj.getString("runtime"));
+                        movie.setId(obj.getString("id"));
+                        if(obj.has(Constant.TagConstant.GENRES)){
+                            JSONArray genreJsonArray = obj.getJSONArray(Constant.TagConstant.GENRES);
+                            for(int index=0;index<genreJsonArray.length();index++){
 
-                    movies.add(movie);
+                                if(constructGenreString==null){
+                                    constructGenreString = genreJsonArray.getString(index);
+                                }else{
+                                    constructGenreString = constructGenreString+" / "+genreJsonArray.getString(index);
+                                }
+
+
+                            }
+                            movie.setGenres(constructGenreString);
+                            constructGenreString=null;
+                        }
+
+                        movies.add(movie);
+                    }
                 }
 
 
-
-            } catch (JSONException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
             }
 
+            listFetchListerner.onSuccessFullFetch();
 
+
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
+
+
+    }
+
+    private String resolveActivityName(){
+        String activityName = getIntent().getStringExtra(Constant.ACTIVITY_NAME);
+        return activityName;
+    }
+
 
     private String resolveEntryPoint(){
         String category = getIntent().getStringExtra("CATEGORY");
+
         if(category!=null){
             return Helper.fetchMovieEndPaint(category);
         }else if(getIntent().getStringExtra("SEARCH")!=null){
             return getIntent().getStringExtra("SEARCH");
         }
-        else{
+        else {
             return Helper.fetchMovieEndPointByGerne(getIntent().getStringExtra("GERNE"));
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.search_movies) {
+            openDialog();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    DialogFragment dialogFragment;
+
+    private void openDialog() {
+        android.app.FragmentTransaction ft = getFragmentManager().beginTransaction();
+        Fragment prev = getFragmentManager().findFragmentByTag("dialog");
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
+        dialogFragment = new SearchDialogFragment();
+        dialogFragment.show(ft, "dialog");
+    }
+
+
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (dialogFragment != null) {
+            dialogFragment.dismiss();
+        }
+
+    }
+
+
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+       // Toast.makeText(getApplicationContext(),"hj",Toast.LENGTH_SHORT).show();
+        Intent i=new Intent(this,MainActivity.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        finish();
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
 }
 
- class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
+class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
 
     private int spanCount;
     private int spacing;
@@ -260,4 +422,12 @@ public class ListMovieItem extends AppCompatActivity {
 
 
 
+
+
+
+}
+
+interface ListFetchListerner{
+
+    void onSuccessFullFetch();
 }

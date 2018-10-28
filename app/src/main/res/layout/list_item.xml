@@ -26,8 +26,9 @@
             android:layout_gravity="center_vertical"
             android:layout_toLeftOf="@+id/btnMore"
             android:text="Sample title"
-            android:textColor="@android:color/white"
-            android:textSize="18sp"
+            style="@style/CodeFont_Movie_Details_Headers"
+            android:textColor="#ffffff"
+
             />
 
         <Button
@@ -43,6 +44,8 @@
             android:typeface="monospace"
             android:textColor="@color/colorPrimary"
             android:theme="@style/MyButton"
+            style="@style/CodeFont_Cast_Name"
+            android:gravity="right|bottom"
             />
 
 

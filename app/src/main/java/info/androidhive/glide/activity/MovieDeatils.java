@@ -1,14 +1,21 @@
 package info.androidhive.glide.activity;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Parcelable;
+import android.os.Vibrator;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -17,6 +24,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.Menu;
@@ -52,8 +60,11 @@ import com.github.ybq.android.spinkit.style.ThreeBounce;
 import com.github.ybq.android.spinkit.style.Wave;
 import com.manuelpeinado.fadingactionbar.FadingActionBarHelper;
 import com.thefinestartist.finestwebview.FinestWebView;
+import com.thefinestartist.finestwebview.listeners.WebViewListener;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,6 +76,8 @@ import info.androidhive.glide.adapter.RecyclerItemClickListener;
 import info.androidhive.glide.adapter.SectionListDataAdapter;
 import info.androidhive.glide.app.AppController;
 import info.androidhive.glide.bo.MovieDetailsBO;
+import info.androidhive.glide.helper.FileDownloder;
+import info.androidhive.glide.helper.Helper;
 import info.androidhive.glide.model.Cast;
 import info.androidhive.glide.model.Movie;
 import info.androidhive.glide.model.Torrent;
@@ -84,7 +97,7 @@ public class MovieDeatils extends AppCompatActivity {
     private ImageView backgroundImageView;
     private TextView imdbRating,likeCount,year,mpaRating,movieHeader,pgRating,runtime,description,genres;
     private Button watchTrailer;
-    private Button imdblink;
+    private Button imdblink,movieSubtitle;
     private ProgressDialog pDialog;
     private String URL_END_POINT = Constant.StaticUrls.MOVIE_DETAILS;
     private String URL_END_POINT_FOR_SIMILAR_MOVIES = Constant.StaticUrls.SIMILAR_MOVIE_DETAILS;
@@ -103,6 +116,7 @@ public class MovieDeatils extends AppCompatActivity {
     private LinearLayout linearLayout;
     private WebView webView;
     private ProgressBar progressBarForTopImage;
+    private SharedPreferences sharedpreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,6 +138,7 @@ public class MovieDeatils extends AppCompatActivity {
         recycleView = (RecyclerView) findViewById(R.id.recycler_view);
         watchTrailer = (Button) findViewById(R.id.watchTrailer);
         imdblink = (Button) findViewById(R.id.imbdLink);
+        movieSubtitle = (Button) findViewById(R.id.movie_subtitle);
         castLinearLayout = (LinearLayout) findViewById(R.id.castLayout);
         castLinearLayoutHeader = (LinearLayout) findViewById(R.id.castLayoutHeader);
         progressBar = (ProgressBar) findViewById(R.id.spin_kit);
@@ -139,6 +154,12 @@ public class MovieDeatils extends AppCompatActivity {
             setSupportActionBar(toolbar);
             toolbar.setNavigationIcon(R.drawable.back);
             toolbar.setTitle("");
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    resolveBackButtonAction();
+                }
+            });
 
         }
 
@@ -152,8 +173,10 @@ public class MovieDeatils extends AppCompatActivity {
 
         castAdapter = new CastAdapter(getApplicationContext(),castArr);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+
         recycleView.setLayoutManager(mLayoutManager);
         recycleView.setItemAnimator(new DefaultItemAnimator());
+        recycleView.setNestedScrollingEnabled(false);
         recycleView.setAdapter(castAdapter);
 
 
@@ -161,21 +184,14 @@ public class MovieDeatils extends AppCompatActivity {
         RecyclerView.LayoutManager mLayoutManagerForDownload = new LinearLayoutManager(getApplicationContext());
         downloadRecycleView.setLayoutManager(mLayoutManagerForDownload);
         downloadRecycleView.setItemAnimator(new DefaultItemAnimator());
+        downloadRecycleView.setNestedScrollingEnabled(false);
         downloadRecycleView.setAdapter(downloadMovieAdapter);
 
-        downloadRecycleView.addOnItemTouchListener(
+       /* downloadRecycleView.addOnItemTouchListener(
                 new RecyclerItemClickListener(getApplicationContext(), downloadRecycleView ,new RecyclerItemClickListener.OnItemClickListener() {
                     @Override public void onItemClick(View view, int position) {
-                        //MovieDetailsBO.DownloadData(getApplicationContext(),torrentArr.get(position).getUrl(),view);
-                        //Toast.makeText(getApplicationContext(),"come here "+torrentArr.get(position).getUrl(),Toast.LENGTH_LONG).show();
 
-
-                        //webView.setWebViewClient(new myWebClient());
-                       // webView.getSettings().setJavaScriptEnabled(true);
-                        Intent intent = new Intent(Intent.ACTION_VIEW);
-                        intent.setDataAndType(Uri.parse(torrentArr.get(position).getUrl()), "application/x-bittorrent");
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                        startActivity(intent);
+                        Toast.makeText(getApplicationContext(),"Please click on Magnet or Download Icon ",Toast.LENGTH_SHORT).show();
 
                     }
 
@@ -183,7 +199,7 @@ public class MovieDeatils extends AppCompatActivity {
                         // do whatever
                     }
                 })
-        );
+        );*/
 
 
         itemListDataAdapter = new SectionListDataAdapter(getApplicationContext(), movieArr);
@@ -245,6 +261,16 @@ public class MovieDeatils extends AppCompatActivity {
         //fetchMovieDetails(URL_END_POINT+"3304");
         //fetchSimilarMovieDetails(URL_END_POINT_FOR_SIMILAR_MOVIES+"3304");
 
+        sharedpreferences = getSharedPreferences(Constant.MyPREFERENCES, Context.MODE_PRIVATE);
+
+
+
+
+
+    }
+
+    private void resolveBackButtonAction() {
+        finish();
 
     }
 
@@ -265,7 +291,7 @@ public class MovieDeatils extends AppCompatActivity {
         return null;
     }
 
-    private void setMovieDetailsToView(Movie movie){
+    private void setMovieDetailsToView(final Movie movie){
         if(movie!=null){
             progressBar.setVisibility(View.GONE);
            // progressBarForTopImage.setVisibility(View.GONE);
@@ -279,6 +305,7 @@ public class MovieDeatils extends AppCompatActivity {
             year.setText(movie.getYear());
             runtime.setText(movie.getRuntime()+" m");
             IMDB_CODE_MOVIE=movie.getImdbCode();
+            Log.d("QWE",movie.getImdbCode());
             description.setText(movie.getDescriptionFull());
             genres.setText(movie.getGenres());
             RequestOptions myOptions = new RequestOptions()
@@ -323,11 +350,42 @@ public class MovieDeatils extends AppCompatActivity {
 
 
            for(Torrent torrent:movie.getTorrentArr()){
+                torrent.setMovieTitle(movie.getTitle());
                 torrentArr.add(torrent);
 
                 downloadMovieAdapter.notifyDataSetChanged();
             }
 
+            movieSubtitle.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+
+
+                    new FinestWebView.Builder(getApplicationContext()).theme(R.style.FinestWebViewTheme)
+                            .titleDefault("Loading..")
+                            .toolbarScrollFlags(0)
+                            .statusBarColorRes(R.color.blackPrimaryDark)
+                            .toolbarColorRes(R.color.blackPrimary)
+                            .titleColorRes(R.color.finestWhite)
+                            .urlColorRes(R.color.blackPrimaryLight)
+                            .iconDefaultColorRes(R.color.finestWhite)
+                            .progressBarColorRes(R.color.finestWhite)
+                            .swipeRefreshColorRes(R.color.blackPrimaryDark)
+                            .menuSelector(R.drawable.selector_light_theme)
+                            .menuTextGravity(Gravity.CENTER_VERTICAL | Gravity.RIGHT)
+                            .menuTextPaddingRightRes(R.dimen.defaultMenuTextPaddingLeft)
+                            .dividerHeight(0)
+                            .gradientDivider(false)
+                            //                    .setCustomAnimations(R.anim.slide_up, R.anim.hold, R.anim.hold, R.anim.slide_down)
+                            .setCustomAnimations(R.anim.slide_left_in, R.anim.hold, R.anim.hold,
+                                    R.anim.slide_right_out)
+                            //                    .setCustomAnimations(R.anim.fade_in_fast, R.anim.fade_out_medium, R.anim.fade_in_medium, R.anim.fade_out_fast)
+
+                            .show("http://www.yifysubtitles.com/movie-imdb/" + movie.getImdbCode());
+                }
+
+            });
         }
 
     }
@@ -408,6 +466,75 @@ public class MovieDeatils extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+
+
+
+
+    private class LongOperation extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+            String content = FileDownloder.downLoadFromUrl(params[0]);
+            return content;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            Log.d("QWERTY",result);
+            intent.setDataAndType(Uri.parse(result), "application/x-bittorrent");
+            intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+            generateTorrentIntent(getApplicationContext(),"",intent);
+           // startActivity(intent);
+        }
+
+        @Override
+        protected void onPreExecute() {}
+
+        @Override
+        protected void onProgressUpdate(Void... values) {}
+    }
+
+
+
+    public Intent generateTorrentIntent(Context context, String action, Intent intent) {
+        final PackageManager packageManager = context.getPackageManager();
+        List<ResolveInfo> resolveInfo = packageManager.queryIntentActivities(intent,
+                PackageManager.MATCH_DEFAULT_ONLY);
+        if (resolveInfo.size() > 0) {
+            List<Intent> targetedShareIntents = new ArrayList<Intent>();
+            for (ResolveInfo r : resolveInfo) {
+                Intent progIntent = (Intent)intent.clone();
+                String packageName = r.activityInfo.packageName;
+
+                progIntent.setPackage(packageName);
+                if (r.activityInfo.packageName.contains("torrent"))
+                    targetedShareIntents.add(progIntent);
+
+            }
+            if (targetedShareIntents.size() > 0) {
+                Intent chooserIntent = Intent.createChooser(targetedShareIntents.remove(0),
+                        "Select app to share");
+
+                chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS,
+                        targetedShareIntents.toArray(new Parcelable[] {}));
+
+                return chooserIntent;
+            }
+        }
+        return null;
+    }
+
+    public void getVibratorService(){
+        Vibrator vb = (Vibrator)   getSystemService(Context.VIBRATOR_SERVICE);
+        vb.vibrate(100);
+    }
+
+
+
+
+
 
 }
 

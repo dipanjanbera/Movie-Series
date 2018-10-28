@@ -43,6 +43,7 @@ public class MovieGerneListLayout extends AppCompatActivity {
         relativeLayout.setVisibility(View.GONE);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitleTextAppearance(this,R.style.CodeFont_Movie_Details_Headers);
         recyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
 
 

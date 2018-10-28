@@ -46,7 +46,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.MyViewHo
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView title, count,details;
+        public TextView title, count,details,genre;
         public ImageView thumbnail, overflow,star;
         public CardView cardView;
         public ProgressBar progressBar;
@@ -61,6 +61,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.MyViewHo
             details = view.findViewById(R.id.textView2);
             overflow = view.findViewById(R.id.overflow);
             cardView = view.findViewById(R.id.card_view);
+            genre = (TextView)view.findViewById(R.id.textView17);
 
         }
     }
@@ -117,7 +118,8 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.MyViewHo
                 holder.title.setTag(movie.getId());
 
                 String text = movie.getRating()+"  |  "+movie.getYear()+"  |  "+movie.getRuntime()+" min";
-                holder.details.setText(text);
+                holder.details.setText(" "+text);
+                holder.genre.setText(movie.getGenres());
 
 
     }

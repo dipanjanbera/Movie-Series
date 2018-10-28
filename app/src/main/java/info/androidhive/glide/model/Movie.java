@@ -25,6 +25,15 @@ public class Movie {
 	private String smallCoverImage;
 	private String mediumCoverImage;
 	private String largeCoverImage;
+
+	public boolean isCategoryDescriptorTab() {
+		return isCategoryDescriptorTab;
+	}
+
+	public void setCategoryDescriptorTab(boolean categoryDescriptorTab) {
+		isCategoryDescriptorTab = categoryDescriptorTab;
+	}
+
 	private String state;
 	private String dateUploaded;
 	private String dateUploadedUnix;
@@ -33,6 +42,9 @@ public class Movie {
 	private Cast cast;
 	private ArrayList<Cast> castArr = new ArrayList<Cast>();
 	private ArrayList<Torrent> torrentArr = new ArrayList<Torrent>();
+	private boolean isCategoryDescriptorTab;
+
+
 
 	public ArrayList<Torrent> getTorrentArr() {
 		return torrentArr;

@@ -80,6 +80,7 @@ public class MovieGerneListAdapter extends RecyclerView.Adapter<MovieGerneListAd
                     //Toast.makeText(v.getContext(), "click event on more, "+gerneList.get(position) , Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(v.getContext(), ListMovieItem.class);
                     intent.putExtra("GERNE", gerneList.get(position));
+                    intent.putExtra(Constant.ACTIVITY_NAME, gerneList.get(position)+" Movies");
                     v.getContext().startActivity(intent);
 
 

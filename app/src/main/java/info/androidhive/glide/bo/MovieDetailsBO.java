@@ -64,13 +64,13 @@ public class MovieDetailsBO {
         movie.setYtTrailerCode(obj.getString(Constant.TagConstant.YT_TRAILER_CODE));
         movie.setImdbCode(obj.getString(Constant.TagConstant.IMBD_CODE));
         if(obj.has(Constant.TagConstant.GENRES)){
-            JSONArray castJsonArray = obj.getJSONArray(Constant.TagConstant.GENRES);
-            for(int index=0;index<castJsonArray.length();index++){
+            JSONArray genreJsonArray = obj.getJSONArray(Constant.TagConstant.GENRES);
+            for(int index=0;index<genreJsonArray.length();index++){
 
                 if(constructGenreString==null){
-                    constructGenreString = castJsonArray.getString(index);
+                    constructGenreString = genreJsonArray.getString(index);
                 }else{
-                    constructGenreString = constructGenreString+" / "+castJsonArray.getString(index);
+                    constructGenreString = constructGenreString+" / "+genreJsonArray.getString(index);
                 }
 
 
@@ -109,6 +109,9 @@ public class MovieDetailsBO {
                 torrent.setUrl(torrentObj.getString(Constant.TagConstant.TORRENT_URL));
                 torrent.setQuality(torrentObj.getString(Constant.TagConstant.TORRENT_QUALITY));
                 torrent.setSize(torrentObj.getString(Constant.TagConstant.TORRENT_SIZE));
+                torrent.setHash(torrentObj.getString(Constant.TagConstant.TORRENT_HASH));
+                torrent.setSeeds(torrentObj.getString(Constant.TagConstant.TORRENT_SEEDS));
+                torrent.setPeers(torrentObj.getString(Constant.TagConstant.TORRENT_PEERS));
                 torrentList.add(torrent);
                 Log.d("ABCD",torrent.getQuality());
             }

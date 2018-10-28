@@ -9,6 +9,25 @@ public class Torrent {
 	private String sizeBytes;
 	private String dateUploaded;
 	private String dateUploadedUnix;
+	private String hash;
+	private String movieTitle;
+
+	public String getMovieTitle() {
+		return movieTitle;
+	}
+
+	public void setMovieTitle(String movieTitle) {
+		this.movieTitle = movieTitle;
+	}
+
+	public String getHash() {
+		return hash;
+	}
+
+	public void setHash(String hash) {
+		this.hash = hash;
+	}
+
 	public String getUrl() {
 		return url;
 	}

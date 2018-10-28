@@ -39,7 +39,7 @@ public class RecyclerViewDataAdapter extends RecyclerView.Adapter<RecyclerViewDa
     }
 
     @Override
-    public void onBindViewHolder(ItemRowHolder itemRowHolder, int i) {
+    public void onBindViewHolder(ItemRowHolder itemRowHolder, final int i) {
 
         final String sectionName = dataList.get(i).getSectionDataModel().getHeaderTitle();
         final String movieIdentifier = dataList.get(i).getSectionDataModel().getMovieIdentifier();
@@ -102,6 +102,7 @@ public class RecyclerViewDataAdapter extends RecyclerView.Adapter<RecyclerViewDa
 
                     Intent intent = new Intent(v.getContext(), ListMovieItem.class);
                     intent.putExtra("CATEGORY", movieIdentifier);
+                    intent.putExtra(Constant.ACTIVITY_NAME, sectionName);
                     v.getContext().startActivity(intent);
                 }
 

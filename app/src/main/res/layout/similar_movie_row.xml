@@ -44,7 +44,8 @@
                 android:paddingRight="@dimen/album_title_padding"
                 android:paddingTop="@dimen/album_title_padding"
                 android:textColor="#ffffff"
-                android:textSize="@dimen/album_title" />
+
+                style="@style/CodeFont_Movie_Title_Headers"/>
 
             <ImageView
                 android:id="@+id/overflow"

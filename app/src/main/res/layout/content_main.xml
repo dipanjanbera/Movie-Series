@@ -26,6 +26,30 @@
             android:layout_gravity="center"
             app:SpinKit_Color="@color/colorPrimary" />
 
+      <!--  <RelativeLayout
+            android:id="@+id/spinKitLayoutBottomPanel"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginBottom="66dp"
+            android:background="#ffffff">
+
+
+            <com.github.ybq.android.spinkit.SpinKitView xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/spin_kit_bottom_panel"
+                style="@style/SpinKitView.Large.ThreeBounce"
+                android:layout_width="wrap_content"
+                android:layout_height="70dp"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                app:SpinKit_Color="@color/colorPrimary" />
+
+
+        </RelativeLayout>-->
+
 
     </RelativeLayout>
 
@@ -35,6 +59,8 @@
         android:layout_height="wrap_content"
         android:scrollbars="vertical"
         android:background="#000000"
+        android:paddingBottom="50dp"
+        android:clipToPadding="false"
        />
 
 </RelativeLayout>
