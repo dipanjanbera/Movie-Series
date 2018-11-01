@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="info.androidhive.glide">
+    package="info.dipanjan.app">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -11,13 +11,13 @@
 
 
     <application
-        android:name=".app.AppController"
+        android:name="info.dipanjan.app.app.AppController"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.MainActivity"
+        <activity android:name="info.dipanjan.app.activity.MainActivity"
             android:screenOrientation="portrait">
 
             <intent-filter>
@@ -28,23 +28,23 @@
 
         </activity>
         <activity
-        android:name=".activity.ListMovieItem"
+        android:name="info.dipanjan.app.activity.ListMovieItem"
             android:screenOrientation="portrait"
         android:label="@string/app_name" />
 
         <activity
-        android:name=".activity.MovieDeatils"
+        android:name="info.dipanjan.app.activity.MovieDeatils"
             android:screenOrientation="portrait"
             android:label=""
             />
 
         <activity
-            android:name=".activity.YoutubeVideoPlayer"
+            android:name="info.dipanjan.app.activity.YoutubeVideoPlayer"
             android:screenOrientation="landscape"
             android:label="@string/app_name" />
 
         <activity
-            android:name=".activity.MovieGerneListLayout"
+            android:name="info.dipanjan.app.activity.MovieGerneListLayout"
 
             android:label="@string/app_name" />
 
@@ -54,7 +54,7 @@
             android:screenOrientation="sensor"
             android:theme="@style/FinestWebViewTheme.Light"/>
 
-        <activity android:name=".activity.WebViewActivity"/>
+        <activity android:name="info.dipanjan.app.activity.WebViewActivity"/>
     </application>
 
 

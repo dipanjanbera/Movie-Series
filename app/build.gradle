@@ -5,7 +5,7 @@ android {
     compileSdkVersion 26
 
     defaultConfig {
-        applicationId "info.androidhive.glide"
+        applicationId "info.dipanjan.app"
         minSdkVersion 16
         targetSdkVersion 26
         versionCode 1

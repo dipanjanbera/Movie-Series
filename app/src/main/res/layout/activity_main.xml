@@ -48,6 +48,33 @@
     </RelativeLayout>
 
 
+
+
+    <RelativeLayout
+        android:id="@+id/messageLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        android:background="#000000">
+
+
+        <TextView
+            android:id="@+id/messageText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            style="@style/CodeFont_Movie_Title_Headers"
+
+
+            android:text="hfuds ghxcg s" />
+
+
+    </RelativeLayout>
+
+
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/my_recycler_view"
         android:layout_width="match_parent"

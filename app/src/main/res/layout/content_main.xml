@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="info.androidhive.glide.activity.ListMovieItem"
+    tools:context="info.dipanjan.app.activity.ListMovieItem"
     android:background="#000000"
     tools:showIn="@layout/list_movie_activity">
 
