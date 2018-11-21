@@ -210,7 +210,7 @@
                         android:layout_weight="1"
                         android:padding="4dp"
 
-                        app:srcCompat="@drawable/rating" />
+                        app:srcCompat="@drawable/pgrating" />
 
                     <TextView
                         android:id="@+id/textView7"
