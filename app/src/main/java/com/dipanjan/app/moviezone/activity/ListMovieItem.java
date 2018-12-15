@@ -65,6 +65,7 @@ public class ListMovieItem extends AppCompatActivity {
     private SharedPreferences sharedpreferences;
     int movieCount=0;
     private TextView messageText;
+    private Integer URLIndexPosition;
 
 
 
@@ -72,7 +73,7 @@ public class ListMovieItem extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_movie_activity);
-
+        URLIndexPosition=-1;
 
         endpoint= resolveEntryPoint();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -136,7 +137,7 @@ public class ListMovieItem extends AppCompatActivity {
 
 
 
-                    fetchImages(endpoint + pageCount, new ListFetchListerner() {
+                    fetchImages(Helper.generateURL(URLIndexPosition,endpoint) + pageCount, new ListFetchListerner() {
                         @Override
                         public void onSuccessFullFetch() {
                             snackBar.dismiss();
@@ -164,6 +165,7 @@ public class ListMovieItem extends AppCompatActivity {
 
                 Intent intent = new Intent(getApplicationContext(),MovieDeatils.class);
                 intent.putExtra("MOVIEID", movies.get(position).getId());
+                intent.putExtra("URLIndexPosition", URLIndexPosition);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 getApplicationContext().startActivity(intent);
 
@@ -178,20 +180,6 @@ public class ListMovieItem extends AppCompatActivity {
 
 
         startUpActivity();
-        /*fetchImages(endpoint + pageCount, new ListFetchListerner() {
-            @Override
-            public void onSuccessFullFetch() {
-              //  Toast.makeText(getApplicationContext(),"come dddd "+movieCount,Toast.LENGTH_SHORT).show();
-                if(getIntent().getStringExtra("SEARCH")!=null){
-                    if(movieCount>1){
-                        getSupportActionBar().setTitle(movieCount+" Movies found");
-                    }else{
-                        getSupportActionBar().setTitle(movieCount+" Movie found");
-                    }
-
-                }
-            }
-        });*/
 
 
     }
@@ -265,14 +253,15 @@ public class ListMovieItem extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(isNetworkAvailable()){
-                    NetworkCheck networkCheck = (NetworkCheck) new NetworkCheck(Constant.BASE_URL, NetworkCheck.TIMEOUT_DURATION,new NetworkCheck.AsyncResponse() {
+                    NetworkCheck networkCheck = (NetworkCheck) new NetworkCheck(new NetworkCheck.AsyncResponse() {
                         @Override
-                        public Boolean processFinish(Boolean output) {
-                            if(output){
+                        public Integer processFinish(Integer URLIndexPos) {
+                            if(URLIndexPos!=-1){
+                                URLIndexPosition=URLIndexPos;
                                 relativeLayoutForMessageText.setVisibility(View.GONE);
                                 messageText.setVisibility(View.GONE);
                                 progressBar.setVisibility(View.VISIBLE);
-                                fetchImages(endpoint + pageCount, new ListFetchListerner() {
+                                fetchImages(Helper.generateURL(URLIndexPos,endpoint) + pageCount, new ListFetchListerner() {
                                     @Override
                                     public void onSuccessFullFetch() {
                                         //  Toast.makeText(getApplicationContext(),"come dddd "+movieCount,Toast.LENGTH_SHORT).show();
@@ -322,14 +311,15 @@ public class ListMovieItem extends AppCompatActivity {
 
         if(isNetworkAvailable()){
 
-            NetworkCheck networkCheck = (NetworkCheck) new NetworkCheck(Constant.BASE_URL, NetworkCheck.TIMEOUT_DURATION,new NetworkCheck.AsyncResponse() {
+            NetworkCheck networkCheck = (NetworkCheck) new NetworkCheck(new NetworkCheck.AsyncResponse() {
                 @Override
-                public Boolean processFinish(Boolean output) {
-                    if(output){
+                public Integer processFinish(Integer URLIndexPos) {
+                    if(URLIndexPos!=1){
+                        URLIndexPosition=URLIndexPos;
                         relativeLayoutForMessageText.setVisibility(View.GONE);
                         messageText.setVisibility(View.GONE);
                         progressBar.setVisibility(View.VISIBLE);
-                        fetchImages(endpoint + pageCount, new ListFetchListerner() {
+                        fetchImages(Helper.generateURL(URLIndexPos,endpoint) + pageCount, new ListFetchListerner() {
                             @Override
                             public void onSuccessFullFetch() {
                                 //  Toast.makeText(getApplicationContext(),"come dddd "+movieCount,Toast.LENGTH_SHORT).show();
@@ -438,7 +428,7 @@ public class ListMovieItem extends AppCompatActivity {
         String category = getIntent().getStringExtra("CATEGORY");
 
         if(category!=null){
-            return Helper.fetchMovieEndPaint(category);
+            return Helper.fetchMovieEndPoint(category);
         }else if(getIntent().getStringExtra("SEARCH")!=null){
             return getIntent().getStringExtra("SEARCH");
         }

@@ -12,7 +12,7 @@ import com.dipanjan.app.moviezone.util.Constant;
  */
 
 public class Helper {
-    public static String fetchMovieEndPaint(String categoty){
+    public static String fetchMovieEndPoint(String categoty){
         if(categoty.equalsIgnoreCase(Constant.MovieCategory.ACTION)){
             return Constant.ListDisplay.ACTION_MOVIE_URL;
         }
@@ -94,5 +94,11 @@ public class Helper {
 
 
 
+    public static String generateURL(Integer urlIndexPos,String URL){
+        if(urlIndexPos>-1){
+            return Constant.BASE_URL[urlIndexPos]+URL;
+        }
+        return null;
+    }
 
 }

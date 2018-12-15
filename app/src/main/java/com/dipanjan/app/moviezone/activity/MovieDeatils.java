@@ -51,6 +51,7 @@ import com.bumptech.glide.request.target.Target;
 import com.dipanjan.app.moviezone.adapter.CastAdapter;
 import com.dipanjan.app.moviezone.adapter.SectionListDataAdapter;
 import com.dipanjan.app.moviezone.bo.MovieDetailsBO;
+import com.dipanjan.app.moviezone.helper.Helper;
 import com.dipanjan.app.moviezone.helper.NetworkCheck;
 import com.dipanjan.app.moviezone.model.Cast;
 import com.dipanjan.app.moviezone.model.Movie;
@@ -189,7 +190,7 @@ public class MovieDeatils extends AppCompatActivity {
         );*/
 
 
-        itemListDataAdapter = new SectionListDataAdapter(getApplicationContext(), movieArr);
+        itemListDataAdapter = new SectionListDataAdapter(getApplicationContext(), movieArr,getURLIndexPosition());
 
         recyclerViewForSimilarMovies.setHasFixedSize(false);
         recyclerViewForSimilarMovies.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false));
@@ -199,8 +200,8 @@ public class MovieDeatils extends AppCompatActivity {
 
 
        // Toast.makeText(getApplicationContext(),"come here "+URL_END_POINT+getMovieIDFromActivity(),Toast.LENGTH_SHORT).show();
-        fetchMovieDetails(URL_END_POINT+getMovieIDFromActivity());
-        fetchSimilarMovieDetails(URL_END_POINT_FOR_SIMILAR_MOVIES+getMovieIDFromActivity());
+        fetchMovieDetails(Helper.generateURL(getURLIndexPosition(),URL_END_POINT)+getMovieIDFromActivity());
+        fetchSimilarMovieDetails(Helper.generateURL(getURLIndexPosition(),URL_END_POINT_FOR_SIMILAR_MOVIES)+getMovieIDFromActivity());
 
         imdblink.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -263,6 +264,10 @@ public class MovieDeatils extends AppCompatActivity {
 
     private String getMovieIDFromActivity(){
        return getIntent().getStringExtra("MOVIEID");
+    }
+
+    private Integer getURLIndexPosition(){
+        return getIntent().getIntExtra("URLIndexPosition",-1);
     }
 
     private void setMovieDetails(String response){

@@ -162,6 +162,7 @@ public class DownloadMovieAdapter extends RecyclerView.Adapter<DownloadMovieAdap
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.setData(Uri.parse(
                         "https://play.google.com/store/search?q=torrent download"));
                 context.startActivity(intent);

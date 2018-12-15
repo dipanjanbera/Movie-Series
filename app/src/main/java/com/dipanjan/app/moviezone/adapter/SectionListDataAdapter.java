@@ -41,10 +41,13 @@ public class SectionListDataAdapter extends RecyclerView.Adapter<SectionListData
 
     private ArrayList<Movie> itemsList;
     private Context mContext;
+    private Integer URLIndexPosition=-1;
 
-    public SectionListDataAdapter(Context context, ArrayList<Movie> itemsList) {
+
+    public SectionListDataAdapter(Context context, ArrayList<Movie> itemsList,Integer URLIndexPosition) {
         this.itemsList = itemsList;
         this.mContext = context;
+        this.URLIndexPosition=URLIndexPosition;
     }
 
     @Override
@@ -58,7 +61,6 @@ public class SectionListDataAdapter extends RecyclerView.Adapter<SectionListData
     public void onBindViewHolder(final SingleItemRowHolder holder, int i) {
 
         final Movie movie = itemsList.get(i);
-
         ThreeBounce threeBounce = new ThreeBounce();
         holder.progressBar.setIndeterminateDrawable(threeBounce);
         holder.tvTitle.setText(movie.getTitle());
@@ -157,6 +159,7 @@ public class SectionListDataAdapter extends RecyclerView.Adapter<SectionListData
 
                     Intent intent = new Intent(mContext,MovieDeatils.class);
                     intent.putExtra("MOVIEID", (String)tvTitle.getTag());
+                    intent.putExtra("URLIndexPosition", URLIndexPosition);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     mContext.startActivity(intent);
 

@@ -25,10 +25,12 @@ public class RecyclerViewDataAdapter extends RecyclerView.Adapter<RecyclerViewDa
     private ArrayList<DataModel> dataList;
     private Context mContext;
     ArrayList<Movie> movieList;
+    private Integer URLIndexPosition;
 
-    public RecyclerViewDataAdapter(Context context, ArrayList<DataModel> dataList) {
+    public RecyclerViewDataAdapter(Context context, ArrayList<DataModel> dataList,Integer URLIndexPosition) {
         this.dataList = dataList;
         this.mContext = context;
+        this.URLIndexPosition=URLIndexPosition;
     }
 
     @Override
@@ -51,7 +53,7 @@ public class RecyclerViewDataAdapter extends RecyclerView.Adapter<RecyclerViewDa
         itemRowHolder.itemTitle.setText(sectionName);
         itemRowHolder.btnMore.setTag("" + sectionName);
 
-        SectionListDataAdapter itemListDataAdapter = new SectionListDataAdapter(mContext, singleSectionItems);
+        SectionListDataAdapter itemListDataAdapter = new SectionListDataAdapter(mContext, singleSectionItems,URLIndexPosition);
 
         itemRowHolder.recycler_view_list.setHasFixedSize(false);
         itemRowHolder.recycler_view_list.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));

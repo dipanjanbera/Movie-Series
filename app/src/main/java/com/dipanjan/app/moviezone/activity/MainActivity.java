@@ -22,6 +22,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -51,6 +52,7 @@ import com.dipanjan.app.moviezone.util.Constant;
 public class MainActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
+    private Integer URLIndexPosition=-1;
 
 
     ArrayList<DataModel> dataModelArrayList=null;
@@ -114,14 +116,16 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(isNetworkAvailable()){
-                    NetworkCheck networkCheck = (NetworkCheck) new NetworkCheck(Constant.BASE_URL, NetworkCheck.TIMEOUT_DURATION,new NetworkCheck.AsyncResponse() {
+                    NetworkCheck networkCheck = (NetworkCheck) new NetworkCheck(new NetworkCheck.AsyncResponse() {
                         @Override
-                        public Boolean processFinish(Boolean output) {
-                            if(output){
+                        public Integer processFinish(Integer URLIndexPos) {
+                            if(URLIndexPos!=-1){
+
+                                URLIndexPosition = URLIndexPos;
                                 relativeLayoutForMessageText.setVisibility(View.GONE);
                                 messageText.setVisibility(View.GONE);
                                 progressBar.setVisibility(View.VISIBLE);
-                                populateMovieData();
+                                populateMovieData(URLIndexPos);
                             }else{
                                 relativeLayout.setVisibility(View.GONE);
                                 relativeLayoutForMessageText.setVisibility(View.VISIBLE);
@@ -151,14 +155,16 @@ public class MainActivity extends AppCompatActivity {
 
         if(isNetworkAvailable()){
 
-            NetworkCheck networkCheck = (NetworkCheck) new NetworkCheck(Constant.BASE_URL, NetworkCheck.TIMEOUT_DURATION,new NetworkCheck.AsyncResponse() {
+            NetworkCheck networkCheck = (NetworkCheck) new NetworkCheck(new NetworkCheck.AsyncResponse() {
                 @Override
-                public Boolean processFinish(Boolean output) {
-                    if(output){
+                public Integer processFinish(Integer URLIndexPos) {
+                    if(URLIndexPos!=-1){
+                        Toast.makeText(getApplicationContext(),URLIndexPos+"---"+Constant.BASE_URL[URLIndexPos],Toast.LENGTH_SHORT).show();
+                        URLIndexPosition=URLIndexPos;
                         relativeLayoutForMessageText.setVisibility(View.GONE);
                         messageText.setVisibility(View.GONE);
                         progressBar.setVisibility(View.VISIBLE);
-                        populateMovieData();
+                        populateMovieData(URLIndexPos);
                     }else{
                         relativeLayout.setVisibility(View.GONE);
                         relativeLayoutForMessageText.setVisibility(View.VISIBLE);
@@ -215,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
 
         my_recycler_view.setHasFixedSize(false);
 
-        RecyclerViewDataAdapter adapter = new RecyclerViewDataAdapter(this, dataModelArrayList);
+        RecyclerViewDataAdapter adapter = new RecyclerViewDataAdapter(this, dataModelArrayList,URLIndexPosition);
 
         my_recycler_view.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
@@ -248,21 +254,21 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void populateMovieData() {
+    private void populateMovieData(Integer URLIndexPos) {
         Log.d("CALL","Y");
-        initialisedListItems();
+        initialisedListItems(URLIndexPos);
         for (DataModel dataModel : dataModelArrayList) {
             if (dataModel != null) {
                 fetchMovieData(dataModel);
             }
         }
 
-        populateMovieGerne();
+        populateMovieGerne(URLIndexPos);
 
     }
 
 
-    private void populateMovieGerne() {
+    private void populateMovieGerne(Integer URLIndexPos) {
         DataModel dataModel = new DataModel();
         SectionDataModel sectionDataModel = new SectionDataModel();
         sectionDataModel.setHeaderTitle("Browse By Genre");
@@ -322,11 +328,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private ArrayList<DataModel> initialisedListItems() {
+    private ArrayList<DataModel> initialisedListItems(Integer URLIndexPos) {
 
         for (int index = 0; index < Constant.IDENTIFIER_LIST.length; index++) {
             ArrayList<Movie> movieArr = new ArrayList<Movie>();
-            DataModel dataModel = new DataModel(Constant.URL_LINK[index], Constant.IDENTIFIER_LIST[index], Constant.IDENTIFIER_LIST[index], Constant.QUERY_PARAMETER[index], Helper.getFullHeaderName(Constant.HEADER_LIST[index]));
+            DataModel dataModel = new DataModel(Helper.generateURL(URLIndexPos,Constant.URL_LINK[index]), Constant.IDENTIFIER_LIST[index], Constant.IDENTIFIER_LIST[index], Constant.QUERY_PARAMETER[index], Helper.getFullHeaderName(Constant.HEADER_LIST[index]));
             SectionDataModel sectionDataModel = new SectionDataModel();
             sectionDataModel.setHeaderTitle(Helper.getFullHeaderName(Constant.HEADER_LIST[index]));
             sectionDataModel.setMovieIdentifier(Constant.IDENTIFIER_LIST[index]);
@@ -370,11 +376,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 try{
-
+                   // Toast.makeText(getApplicationContext(),"Could Not connect",Toast.LENGTH_SHORT).show();
                 }catch (Exception ex){
-
+                    ex.printStackTrace();
                 }
-                Log.d("ERROR", error.getMessage());
+
 
             }
         });

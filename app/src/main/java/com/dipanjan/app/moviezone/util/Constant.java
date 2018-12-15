@@ -1,12 +1,19 @@
 package com.dipanjan.app.moviezone.util;
 
+import java.util.ArrayList;
+
 /**
  * Created by LENOVO on 09-06-2018.
  */
 
 public interface Constant {
 
-    String BASE_URL = "https://yts.am";
+   // String BASE_URL = "https://yts.am";
+    //String BASE_URL = "https://ytss.unblocked.ms/";
+    //String BASE_URL = "https://yts.unblock.ws/";
+     String[] BASE_URL= {"https://yts.am","https://ytss.unblocked.ms/","https://yts.unblock.ws/"};
+
+
     String TAG = "Application";
     String MyPREFERENCES = "MyPrefs" ;
     String PREF_ENDPOINT = "ENDPOINT";
@@ -18,32 +25,32 @@ public interface Constant {
 
 
     interface RowDisplay {
-        String ACTION_MOVIE_URL = BASE_URL + "/api/v2/list_movies.json?limit=" + MAX_ITEM_EACH_ROW + "&sort_by=rating&order_by=desc&genre=action&with_rt_ratings=true";
-        String HORROR_MOVIE_URL = BASE_URL + "/api/v2/list_movies.json?limit=" + MAX_ITEM_EACH_ROW + "&sort_by=rating&order_by=desc&genre=horror&with_rt_ratings=true";
-        String COMEDY_MOVIE_URL = BASE_URL + "/api/v2/list_movies.json?limit=" + MAX_ITEM_EACH_ROW + "&sort_by=rating&order_by=desc&genre=comedy&with_rt_ratings=true";
-        String ROMANCE_MOVIE_URL = BASE_URL + "/api/v2/list_movies.json?limit=" + MAX_ITEM_EACH_ROW + "&sort_by=rating&order_by=desc&genre=romance&with_rt_ratings=true";
-        String DOCUMENTARY_MOVIE_URL = BASE_URL + "/api/v2/list_movies.json?limit=" + MAX_ITEM_EACH_ROW + "&sort_by=rating&order_by=desc&genre=documentary&with_rt_ratings=true";
-        String BIOGRAPHY_MOVIE_URL = BASE_URL + "/api/v2/list_movies.json?limit=" + MAX_ITEM_EACH_ROW + "&sort_by=rating&order_by=desc&genre=biography&with_rt_ratings=true";
-        String LATEST_MOVIE = BASE_URL + "/api/v2/list_movies.json?limit=" + MAX_ITEM_EACH_ROW + "&genre=all";
-        String BEST_MOVIES = BASE_URL + "/api/v2/list_movies.json?minimum_rating=8&sort_by=rating&limit=" + MAX_ITEM_EACH_ROW;
-        String MOVIE_3D= BASE_URL+"/api/v2/list_movies.json?limit=" + MAX_ITEM_EACH_ROW + "&sort_by=rating&order_by=desc&with_rt_ratings=true&quality=3D";
-        String POPULAR_DOWNLOAD=BASE_URL+"/api/v2/list_movies.json?sort_by=download_count&limit="+MAX_ITEM_EACH_ROW;
+        String ACTION_MOVIE_URL = "/api/v2/list_movies.json?limit=" + MAX_ITEM_EACH_ROW + "&sort_by=rating&order_by=desc&genre=action&with_rt_ratings=true";
+        String HORROR_MOVIE_URL = "/api/v2/list_movies.json?limit=" + MAX_ITEM_EACH_ROW + "&sort_by=rating&order_by=desc&genre=horror&with_rt_ratings=true";
+        String COMEDY_MOVIE_URL = "/api/v2/list_movies.json?limit=" + MAX_ITEM_EACH_ROW + "&sort_by=rating&order_by=desc&genre=comedy&with_rt_ratings=true";
+        String ROMANCE_MOVIE_URL = "/api/v2/list_movies.json?limit=" + MAX_ITEM_EACH_ROW + "&sort_by=rating&order_by=desc&genre=romance&with_rt_ratings=true";
+        String DOCUMENTARY_MOVIE_URL = "/api/v2/list_movies.json?limit=" + MAX_ITEM_EACH_ROW + "&sort_by=rating&order_by=desc&genre=documentary&with_rt_ratings=true";
+        String BIOGRAPHY_MOVIE_URL = "/api/v2/list_movies.json?limit=" + MAX_ITEM_EACH_ROW + "&sort_by=rating&order_by=desc&genre=biography&with_rt_ratings=true";
+        String LATEST_MOVIE = "/api/v2/list_movies.json?limit=" + MAX_ITEM_EACH_ROW + "&genre=all";
+        String BEST_MOVIES = "/api/v2/list_movies.json?minimum_rating=8&sort_by=rating&limit=" + MAX_ITEM_EACH_ROW;
+        String MOVIE_3D= "/api/v2/list_movies.json?limit=" + MAX_ITEM_EACH_ROW + "&sort_by=rating&order_by=desc&with_rt_ratings=true&quality=3D";
+        String POPULAR_DOWNLOAD="/api/v2/list_movies.json?sort_by=download_count&limit="+MAX_ITEM_EACH_ROW;
 
     }
 
     interface ListDisplay {
-        String ACTION_MOVIE_URL = BASE_URL + "/api/v2/list_movies.json?sort_by=rating&order_by=desc&genre=action&with_rt_ratings=true&page=";
-        String HORROR_MOVIE_URL = BASE_URL + "/api/v2/list_movies.json?sort_by=rating&order_by=desc&genre=horror&with_rt_ratings=true&page=";
-        String COMEDY_MOVIE_URL = BASE_URL + "/api/v2/list_movies.json?sort_by=rating&order_by=desc&genre=comedy&with_rt_ratings=true&page=";
-        String ROMANCE_MOVIE_URL = BASE_URL + "/api/v2/list_movies.json?sort_by=rating&order_by=desc&genre=romance&with_rt_ratings=true&page=";
-        String DOCUMENTARY_MOVIE_URL = BASE_URL + "/api/v2/list_movies.json?sort_by=rating&order_by=desc&genre=documentary&with_rt_ratings=true&page=";
-        String BIOGRAPHY_MOVIE_URL = BASE_URL + "/api/v2/list_movies.json?sort_by=rating&order_by=desc&genre=biography&with_rt_ratings=true&page=";
-        String LATEST_MOVIE = BASE_URL + "/api/v2/list_movies.json?page=";
-        String BEST_MOVIES = BASE_URL + "/api/v2/list_movies.json?minimum_rating=8&sort_by=rating&page=";
-        String BROWSE_MOVIE_BY_GERNE = BASE_URL + "/api/v2/list_movies.json?genre=";
-        String SEARCH_MOVIE = BASE_URL + "/api/v2/list_movies.json?";
-        String MOVIE_3D = BASE_URL + "/api/v2/list_movies.json?sort_by=rating&order_by=desc&with_rt_ratings=true&quality=3D&page=";
-        String POPULAR_DOWNLOAD=BASE_URL+"/api/v2/list_movies.json?sort_by=download_count&limit="+MAX_ITEM_EACH_ROW+"&page=";
+        String ACTION_MOVIE_URL = "/api/v2/list_movies.json?sort_by=rating&order_by=desc&genre=action&with_rt_ratings=true&page=";
+        String HORROR_MOVIE_URL = "/api/v2/list_movies.json?sort_by=rating&order_by=desc&genre=horror&with_rt_ratings=true&page=";
+        String COMEDY_MOVIE_URL = "/api/v2/list_movies.json?sort_by=rating&order_by=desc&genre=comedy&with_rt_ratings=true&page=";
+        String ROMANCE_MOVIE_URL = "/api/v2/list_movies.json?sort_by=rating&order_by=desc&genre=romance&with_rt_ratings=true&page=";
+        String DOCUMENTARY_MOVIE_URL = "/api/v2/list_movies.json?sort_by=rating&order_by=desc&genre=documentary&with_rt_ratings=true&page=";
+        String BIOGRAPHY_MOVIE_URL = "/api/v2/list_movies.json?sort_by=rating&order_by=desc&genre=biography&with_rt_ratings=true&page=";
+        String LATEST_MOVIE = "/api/v2/list_movies.json?page=";
+        String BEST_MOVIES = "/api/v2/list_movies.json?minimum_rating=8&sort_by=rating&page=";
+        String BROWSE_MOVIE_BY_GERNE = "/api/v2/list_movies.json?genre=";
+        String SEARCH_MOVIE = "/api/v2/list_movies.json?";
+        String MOVIE_3D = "/api/v2/list_movies.json?sort_by=rating&order_by=desc&with_rt_ratings=true&quality=3D&page=";
+        String POPULAR_DOWNLOAD="/api/v2/list_movies.json?sort_by=download_count&limit="+MAX_ITEM_EACH_ROW+"&page=";
 
     }
 
@@ -78,8 +85,8 @@ public interface Constant {
 
 
     interface StaticUrls {
-        String MOVIE_DETAILS = BASE_URL + "/api/v2/movie_details.json?with_images=true&with_cast=true&movie_id=";
-        String SIMILAR_MOVIE_DETAILS = BASE_URL + "/api/v2/movie_suggestions.json?movie_id=";
+        String MOVIE_DETAILS = "/api/v2/movie_details.json?with_images=true&with_cast=true&movie_id=";
+        String SIMILAR_MOVIE_DETAILS = "/api/v2/movie_suggestions.json?movie_id=";
     }
 
     interface MovieCategory {

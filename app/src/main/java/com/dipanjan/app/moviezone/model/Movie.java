@@ -26,6 +26,7 @@ public class Movie {
 	private String mediumCoverImage;
 	private String largeCoverImage;
 
+
 	public boolean isCategoryDescriptorTab() {
 		return isCategoryDescriptorTab;
 	}
