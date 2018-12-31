@@ -49,6 +49,18 @@
             android:label="@string/app_name" />
 
         <activity
+            android:name="com.dipanjan.app.moviezone.activity.ListMovieSeriesItems"
+
+            android:label="@string/app_name" />
+
+        <activity
+            android:name="com.dipanjan.app.moviezone.activity.ListLikedMovieItems"
+
+            android:label="@string/app_name" />
+
+
+
+        <activity
             android:name="com.thefinestartist.finestwebview.FinestWebViewActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="sensor"

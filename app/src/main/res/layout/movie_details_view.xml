@@ -150,6 +150,30 @@
                     android:textSize="16dp"
                     android:textStyle="bold" />
 
+                <com.sackcentury.shinebuttonlib.ShineButton
+                    android:id="@+id/button"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginEnd="29dp"
+                    android:layout_marginRight="29dp"
+                    android:layout_marginTop="170dp"
+                    android:src="@android:color/darker_gray"
+                    app:btn_fill_color="#ff0000"
+                    app:allow_random_color="false"
+                    app:enable_flashing="true"
+                    app:big_shine_color="#f70404"
+                    app:click_animation_duration="200"
+                    app:shine_animation_duration="1500"
+                    app:shine_turn_angle="10"
+                    app:small_shine_offset_angle="20"
+                    app:small_shine_color="#CC9999"
+                    app:shine_count="8"
+                    app:siShape="@raw/heart"
+                    android:text="Button" />
+
 
             </RelativeLayout>
 
@@ -420,6 +444,10 @@
 
             </LinearLayout>
 
+
+
+
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -430,20 +458,55 @@
                 tools:layout_editor_absoluteX="0dp"
                 tools:layout_editor_absoluteY="318dp">
 
-                <TextView
-                    android:id="@+id/downloadMovieTorrent"
-                    style="@style/CodeFont_Movie_Details_Headers"
+                <RelativeLayout
                     android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
 
-                    android:layout_height="wrap_content"
-                    android:inputType="textPersonName"
+                    <TextView
+                        android:id="@+id/learn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBaseline="@+id/downloadMovieTorrent"
+                        android:layout_alignBottom="@+id/downloadMovieTorrent"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_gravity="right"
+                        android:layout_weight="1"
+                        android:paddingLeft="4dp"
+                        android:paddingRight="4dp"
+                        android:text="Learn More >"
+                        android:textAllCaps="false"
+                        style="@style/CodeFont_Cast_Name"
+                        android:textColor="#ffe600"
+                      />
 
-                    android:text="Download Movie" />
+
+
+                    <TextView
+                        android:id="@+id/downloadMovieTorrent"
+                        style="@style/CodeFont_Movie_Details_Headers"
+                        android:layout_width="wrap_content"
+
+                        android:layout_height="wrap_content"
+                        android:inputType="textPersonName"
+
+                        android:text="Download Movie" />
+
+
+                </RelativeLayout>
+
+
+
+
 
                 <View
                     android:layout_width="fill_parent"
                     android:layout_height="1dp"
                     android:background="#c0c0c0" />
+
+
+
 
             </LinearLayout>
 

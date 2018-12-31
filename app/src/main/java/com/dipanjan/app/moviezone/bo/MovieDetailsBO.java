@@ -2,6 +2,8 @@ package com.dipanjan.app.moviezone.bo;
 
 import android.app.DownloadManager;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
@@ -14,10 +16,14 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import com.dipanjan.app.moviezone.helper.Helper;
 import com.dipanjan.app.moviezone.model.Cast;
 import com.dipanjan.app.moviezone.model.Movie;
+import com.dipanjan.app.moviezone.model.MovieSeries;
 import com.dipanjan.app.moviezone.model.Torrent;
 import com.dipanjan.app.moviezone.util.Constant;
+
+import info.dipanjan.app.R;
 
 import static android.content.Context.DOWNLOAD_SERVICE;
 
@@ -60,6 +66,7 @@ public class MovieDetailsBO {
         movie.setDescriptionFull(obj.getString(Constant.TagConstant.DESCRIPTION_FULL));
         movie.setYtTrailerCode(obj.getString(Constant.TagConstant.YT_TRAILER_CODE));
         movie.setImdbCode(obj.getString(Constant.TagConstant.IMBD_CODE));
+        movie.setId(obj.getString(Constant.TagConstant.ID));
         if(obj.has(Constant.TagConstant.GENRES)){
             JSONArray genreJsonArray = obj.getJSONArray(Constant.TagConstant.GENRES);
             for(int index=0;index<genreJsonArray.length();index++){
@@ -109,6 +116,7 @@ public class MovieDetailsBO {
                 torrent.setHash(torrentObj.getString(Constant.TagConstant.TORRENT_HASH));
                 torrent.setSeeds(torrentObj.getString(Constant.TagConstant.TORRENT_SEEDS));
                 torrent.setPeers(torrentObj.getString(Constant.TagConstant.TORRENT_PEERS));
+                torrent.setTorrentType(torrentObj.getString(Constant.TagConstant.TORRENT_TYPE));
                 torrentList.add(torrent);
                 Log.d("ABCD",torrent.getQuality());
             }
@@ -183,6 +191,58 @@ public class MovieDetailsBO {
 
         return downloadReference;
     }
+
+    public static ArrayList<MovieSeries> loadMovieSeriesContents(String str,int URLIndexPosition) {
+        ArrayList<MovieSeries> movieSeriesArrayList = new ArrayList<MovieSeries>();
+        JSONObject jObj = null;
+        try {
+            jObj = new JSONObject(str);
+            if (jObj.has("movies")) {
+                JSONArray jArr = jObj.getJSONArray("movies");
+                if (jArr != null && jArr.length() > 0) {
+                    for (int i = 0; i < jArr.length(); i++) {
+                        MovieSeries movieSeries = new MovieSeries();
+                        JSONObject obj = jArr.getJSONObject(i);
+                        movieSeries.setMovieSeriesTitle(obj.getString("title"));
+                        movieSeries.setMoviePoster(Helper.generateURL(URLIndexPosition,Constant.IMAGE_PATH+obj.getString("poster")));
+                        ArrayList<String> codelist = movieSeries.getImdbCodes();
+                        if (obj.has("codes")) {
+                            JSONArray codeArr = obj.getJSONArray("codes");
+                            for (int index = 0; index < codeArr.length(); index++) {
+                                codelist.add(codeArr.getString(index));
+                            }
+                        }
+                        movieSeries.setNumberOfMovies(codelist.size());
+                        movieSeriesArrayList.add(movieSeries);
+                    }
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return movieSeriesArrayList;
+    }
+
+    public static void populateMovieIMDbCode(String[] IMDbs,ArrayList<String> imdbCodesToAdd){
+        if(imdbCodesToAdd!=null){
+            for(String codes:IMDbs){
+                imdbCodesToAdd.add(codes);
+            }
+        }
+
+    }
+
+    public static ArrayList<String> generateURLForMovieSeries(Integer URLIndexPos, ArrayList<String> codeArr) {
+        ArrayList<String> urlArr = new ArrayList<String>();
+
+        for (String code : codeArr) {
+            urlArr.add(Helper.generateURL(URLIndexPos, Constant.StaticUrls.MOVIE_SHORT_DETAILS + code));
+        }
+        return urlArr;
+
+    }
+
 }
 
 

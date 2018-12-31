@@ -25,7 +25,16 @@ public class Movie {
 	private String smallCoverImage;
 	private String mediumCoverImage;
 	private String largeCoverImage;
+	private boolean isLikedMovie;
 
+
+	public boolean isLikedMovie() {
+		return isLikedMovie;
+	}
+
+	public void setLikedMovie(boolean likedMovie) {
+		isLikedMovie = likedMovie;
+	}
 
 	public boolean isCategoryDescriptorTab() {
 		return isCategoryDescriptorTab;

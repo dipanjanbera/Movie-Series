@@ -70,7 +70,8 @@ public class ListMovieItem extends AppCompatActivity {
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_movie_activity);
         URLIndexPosition=-1;
@@ -122,7 +123,7 @@ public class ListMovieItem extends AppCompatActivity {
                 super.onScrollStateChanged(recyclerView, newState);
 
                 if (!recyclerView.canScrollVertically(1)) {
-        //           Toast.makeText(getApplicationContext(),""+movieCount,Toast.LENGTH_SHORT).show();
+                    //           Toast.makeText(getApplicationContext(),""+movieCount,Toast.LENGTH_SHORT).show();
 
                     final Snackbar snackBar = Snackbar.make(coordinatorLayout, "Fetching movie list...", Snackbar.LENGTH_INDEFINITE);
                     Snackbar.SnackbarLayout layout = (Snackbar.SnackbarLayout) snackBar.getView();
@@ -183,7 +184,6 @@ public class ListMovieItem extends AppCompatActivity {
 
 
     }
-
 
 
     private int dpToPx(int dp) {

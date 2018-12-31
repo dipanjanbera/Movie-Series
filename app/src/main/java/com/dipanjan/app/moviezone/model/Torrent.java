@@ -11,6 +11,15 @@ public class Torrent {
 	private String dateUploadedUnix;
 	private String hash;
 	private String movieTitle;
+	private String torrentType;
+
+	public String getTorrentType() {
+		return torrentType;
+	}
+
+	public void setTorrentType(String torrentType) {
+		this.torrentType = torrentType;
+	}
 
 	public String getMovieTitle() {
 		return movieTitle;

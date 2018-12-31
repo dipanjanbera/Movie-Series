@@ -15,21 +15,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.dipanjan.app.moviezone.activity.MovieDeatils;
-import com.dipanjan.app.moviezone.app.AppController;
+import com.dipanjan.app.moviezone.helper.Helper;
 import com.dipanjan.app.moviezone.model.Torrent;
+import com.dipanjan.app.moviezone.util.Constant;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import info.dipanjan.app.R;
-
-import com.dipanjan.app.moviezone.helper.Helper;
-import com.dipanjan.app.moviezone.util.Constant;
 
 
 public class DownloadMovieAdapter extends RecyclerView.Adapter<DownloadMovieAdapter.MyViewHolder> {
@@ -40,7 +36,7 @@ public class DownloadMovieAdapter extends RecyclerView.Adapter<DownloadMovieAdap
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView torrentQuality, torrentSize,torrentInfo;
-        public ImageView rowImage,magnetLink,downloadLink;
+        public ImageView rowImage,magnetLink,downloadLink,torrentType;
 
 
         public MyViewHolder(View view) {
@@ -51,6 +47,7 @@ public class DownloadMovieAdapter extends RecyclerView.Adapter<DownloadMovieAdap
             rowImage = (ImageView) view.findViewById(R.id.imageView);
             magnetLink = (ImageView) view.findViewById(R.id.imageView16);
             downloadLink = (ImageView) view.findViewById(R.id.imageView17);
+            torrentType = (ImageView)view.findViewById(R.id.imageView9);
 
         }
     }
@@ -110,6 +107,10 @@ public class DownloadMovieAdapter extends RecyclerView.Adapter<DownloadMovieAdap
                     context.startActivity(browserIntent);
                 }
             });
+
+            if(torrent.getTorrentType().equals("web")||torrent.getTorrentType().equals("")){
+                holder.torrentType.setVisibility(View.INVISIBLE);
+            }
         }
 
 

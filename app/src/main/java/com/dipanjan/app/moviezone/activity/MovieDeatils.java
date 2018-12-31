@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -57,8 +58,12 @@ import com.dipanjan.app.moviezone.model.Cast;
 import com.dipanjan.app.moviezone.model.Movie;
 import com.dipanjan.app.moviezone.model.Torrent;
 import com.github.ybq.android.spinkit.style.ThreeBounce;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.sackcentury.shinebuttonlib.ShineButton;
 import com.thefinestartist.finestwebview.FinestWebView;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,7 +86,7 @@ public class MovieDeatils extends AppCompatActivity {
 
     private Toolbar toolbar;
     private ImageView backgroundImageView;
-    private TextView imdbRating,likeCount,year,mpaRating,movieHeader,pgRating,runtime,description,genres;
+    private TextView imdbRating,likeCount,year,mpaRating,movieHeader,pgRating,runtime,description,genres,learn;
     private Button watchTrailer;
     private Button imdblink,movieSubtitle;
     private ProgressDialog pDialog;
@@ -103,7 +108,10 @@ public class MovieDeatils extends AppCompatActivity {
     private WebView webView;
     private ProgressBar progressBarForTopImage;
     private SharedPreferences sharedpreferences;
+    SharedPreferences.Editor editor;
     private static CoordinatorLayout coordinatorLayout;
+    private ShineButton shineButton;
+    private Movie movie;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,6 +142,11 @@ public class MovieDeatils extends AppCompatActivity {
         spinkit_relative_layout = (RelativeLayout) findViewById(R.id.spinkit_relative_layout);
         linearLayout = (LinearLayout) findViewById(R.id.linearLayout1);
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
+        shineButton = (ShineButton) findViewById(R.id.button);
+        learn = (TextView)findViewById(R.id.learn);
+        sharedpreferences = getSharedPreferences(Constant.MyPREFERENCES, Context.MODE_PRIVATE);
+        editor=sharedpreferences.edit();
+
         toolbar=(Toolbar)findViewById(R.id.toolbar);
         pDialog = new ProgressDialog(this);
         webView= new WebView(getApplicationContext());
@@ -203,6 +216,35 @@ public class MovieDeatils extends AppCompatActivity {
         fetchMovieDetails(Helper.generateURL(getURLIndexPosition(),URL_END_POINT)+getMovieIDFromActivity());
         fetchSimilarMovieDetails(Helper.generateURL(getURLIndexPosition(),URL_END_POINT_FOR_SIMILAR_MOVIES)+getMovieIDFromActivity());
 
+        learn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (IMDB_CODE_MOVIE != null) {
+                    new FinestWebView.Builder(getApplicationContext()).theme(R.style.FinestWebViewTheme)
+                            .titleDefault("Loading..")
+                            .toolbarScrollFlags(0)
+                            .statusBarColorRes(R.color.blackPrimaryDark)
+                            .toolbarColorRes(R.color.blackPrimary)
+                            .titleColorRes(R.color.finestWhite)
+                            .urlColorRes(R.color.blackPrimaryLight)
+                            .iconDefaultColorRes(R.color.finestWhite)
+                            .progressBarColorRes(R.color.finestWhite)
+                            .swipeRefreshColorRes(R.color.blackPrimaryDark)
+                            .menuSelector(R.drawable.selector_light_theme)
+                            .menuTextGravity(Gravity.CENTER_VERTICAL | Gravity.RIGHT)
+                            .menuTextPaddingRightRes(R.dimen.defaultMenuTextPaddingLeft)
+                            .dividerHeight(0)
+                            .gradientDivider(false)
+                            //                    .setCustomAnimations(R.anim.slide_up, R.anim.hold, R.anim.hold, R.anim.slide_down)
+                            .setCustomAnimations(R.anim.slide_left_in, R.anim.hold, R.anim.hold,
+                                    R.anim.slide_right_out)
+                            //                    .setCustomAnimations(R.anim.fade_in_fast, R.anim.fade_out_medium, R.anim.fade_in_medium, R.anim.fade_out_fast)
+
+                            .show("https://www.wikihow.tech/Download-a-Torrent-With-Android" );
+                }
+
+            }
+        });
         imdblink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -249,12 +291,136 @@ public class MovieDeatils extends AppCompatActivity {
         //fetchMovieDetails(URL_END_POINT+"3304");
         //fetchSimilarMovieDetails(URL_END_POINT_FOR_SIMILAR_MOVIES+"3304");
 
-        sharedpreferences = getSharedPreferences(Constant.MyPREFERENCES, Context.MODE_PRIVATE);
+
+
+        shineButton.setOnCheckStateChangeListener(new ShineButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(View view, boolean checked) {
+               // Log.e(TAG, "click " + checked);
+                if(checked){
+                    boolean flag=setMovieAsLikedMovie();
+                    if(flag){
+                        shineButton.setBtnColor(Color.RED);
+                    }else{
+                        Toast.makeText(getApplicationContext(),"Error while setting movie as liked",Toast.LENGTH_SHORT).show();
+                    }
+
+                }else{
+                    boolean flag=removeMovieFromLikedMovie();
+                    if(flag){
+                        shineButton.setBtnColor(Color.GRAY);
+                    }else{
+                        shineButton.setBtnColor(Color.RED);
+                        Toast.makeText(getApplicationContext(),"Error while setting movie as disliked.Please try again",Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+                //Toast.makeText(getApplicationContext(),""+checked,Toast.LENGTH_SHORT).show();
+            }
+        });
 
 
 
+    }
+
+    private boolean setMovieAsLikedMovie(){
+        if(this.movie!=null){
+            Gson gson = new Gson();
+            String json = sharedpreferences.getString("likedMovies", "");
+            if(json!=null){
+                Type type = new TypeToken<List<Movie>>(){}.getType();
+                List<Movie> movieList = gson.fromJson(json, type);
+                if(movieList==null){
+                    movieList = new ArrayList<Movie>();
+                }
+                if(!checkIfMovieAlreadyExistsAsLikedMovie(movieList)){
+                    this.movie.setLikedMovie(true);
+                    this.movie.setBackgroundImage(this.movie.getBackgroundImage().substring(this.movie.getBackgroundImage().indexOf("/assets/images/")));
+                    movieList.add(this.movie);
+                    json = gson.toJson(movieList);
+                    editor.putString("likedMovies", json);
+                    editor.commit();
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean fetchMovieListFromLikedMovie(){
+        Gson gson = new Gson();
+        String json = sharedpreferences.getString("likedMovies", null);
+        if(json!=null){
+            Type type = new TypeToken<List<Movie>>(){}.getType();
+            List<Movie> movieList = gson.fromJson(json, type);
+            return checkIfMovieAlreadyExistsAsLikedMovie(movieList);
+        }
+        return false;
+    }
+
+    private boolean checkIfMovieAlreadyExistsAsLikedMovie(List<Movie> movieArrayList){
+        if(movieArrayList!=null&&movieArrayList.size()>0){
+            for(Movie movie:movieArrayList){
+                if(movie.getImdbCode().equals(this.movie.getImdbCode())){
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        return false;
+    }
+
+    private boolean removeMovieFromLikedMovie(){
+        if(this.movie!=null) {
+            try {
+                Gson gson = new Gson();
+                String json = sharedpreferences.getString("likedMovies", "");
+                if (json != null) {
+                    Type type = new TypeToken<List<Movie>>() {
+                    }.getType();
+                    List<Movie> movieList = gson.fromJson(json, type);
+                    if (movieList != null) {
+                        for (Movie movie : movieList) {
+                            if (movie.getImdbCode().equals(this.movie.getImdbCode())) {
+                                movieList.remove(movie);
+                                break;
+                            }
+                        }
+                        json = gson.toJson(movieList);
+                        editor.putString("likedMovies", json);
+                        editor.commit();
+                        return true;
+                    }
+
+                }
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
 
 
+        return false;
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if(getBackTrackPosition()!=null && getBackTrackPosition().equalsIgnoreCase("LIST_LIKED_MOVIE")){
+            Intent intent = new Intent(getApplicationContext(),ListLikedMovieItems.class);
+            intent.putExtra("URLIndexPosition", getURLIndexPosition());
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getApplicationContext().startActivity(intent);
+        }
+    }
+
+    public Movie getMovie() {
+        return movie;
+    }
+
+    public void setMovie(Movie movie) {
+        this.movie = movie;
     }
 
     private void resolveBackButtonAction() {
@@ -268,6 +434,10 @@ public class MovieDeatils extends AppCompatActivity {
 
     private Integer getURLIndexPosition(){
         return getIntent().getIntExtra("URLIndexPosition",-1);
+    }
+
+    private String getBackTrackPosition(){
+        return getIntent().getStringExtra("BACK_TRACK");
     }
 
     private void setMovieDetails(String response){
@@ -392,7 +562,14 @@ public class MovieDeatils extends AppCompatActivity {
             });
         }
 
+        this.movie=movie;
+        if(fetchMovieListFromLikedMovie()){
+            shineButton.setBtnFillColor(Color.RED);
+            shineButton.setChecked(true);
+        }
     }
+
+
 
     private void fetchMovieDetails(String url) {
         StringRequest strReq = new StringRequest(Request.Method.GET,
