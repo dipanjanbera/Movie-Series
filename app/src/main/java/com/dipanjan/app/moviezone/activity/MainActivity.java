@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                             return null;
                         }
-                    }).execute();
+                    });
                     snackBar.dismiss();
                     relativeLayout.setVisibility(View.VISIBLE);
                     progressBar.setVisibility(View.VISIBLE);
@@ -159,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public Integer processFinish(Integer URLIndexPos) {
                     if(URLIndexPos!=-1){
-                        Toast.makeText(getApplicationContext(),URLIndexPos+"---"+Constant.BASE_URL[URLIndexPos],Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getApplicationContext(),URLIndexPos+"---"+Constant.BASE_URL[URLIndexPos],Toast.LENGTH_SHORT).show();
                         URLIndexPosition=URLIndexPos;
                         relativeLayoutForMessageText.setVisibility(View.GONE);
                         messageText.setVisibility(View.GONE);
@@ -174,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     return null;
                 }
-            }).execute();
+            });
 
 
         }else {
@@ -352,31 +352,31 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(String response) {
                 try{
-                Uri uri = Uri.parse(dataModel.getUrlLink());
-                String queryParameter = uri.getQueryParameter(dataModel.getQueryParameter());
-                if (queryParameter != null) {
-                    if (queryParameter.equalsIgnoreCase(dataModel.getCategory())) {
-                        populateMovieList(response.toString(), dataModel.getSectionDataModel().getAllItemsInSection(), new DataFetchListener() {
-                            @Override
-                            public void onDataFetchSuccessfull() {
-                                makeCount();
-                            }
-                        });
+                    Uri uri = Uri.parse(dataModel.getUrlLink());
+                    String queryParameter = uri.getQueryParameter(dataModel.getQueryParameter());
+                    if (queryParameter != null) {
+                        if (queryParameter.equalsIgnoreCase(dataModel.getCategory())) {
+                            populateMovieList(response.toString(), dataModel.getSectionDataModel().getAllItemsInSection(), new DataFetchListener() {
+                                @Override
+                                public void onDataFetchSuccessfull() {
+                                    makeCount();
+                                }
+                            });
 
 
+                        }
                     }
-                }
 
-            }catch(Exception exception){
-                exception.printStackTrace();
-            }
+                }catch(Exception exception){
+                    exception.printStackTrace();
+                }
             }
         }, new Response.ErrorListener() {
 
             @Override
             public void onErrorResponse(VolleyError error) {
                 try{
-                   // Toast.makeText(getApplicationContext(),"Could Not connect",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),"Connection Error",Toast.LENGTH_SHORT).show();
                 }catch (Exception ex){
                     ex.printStackTrace();
                 }
