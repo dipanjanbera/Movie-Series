@@ -1,21 +1,20 @@
 package com.dipanjan.app.moviezone.activity;
 
-import android.app.DialogFragment;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.Intent;
+import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,39 +27,34 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.dipanjan.app.moviezone.adapter.RecyclerViewDataAdapter;
+import com.dipanjan.app.moviezone.adapter.GalleryAdapter;
+import com.dipanjan.app.moviezone.adapter.MovieSeriesAdapter;
+import com.dipanjan.app.moviezone.app.AppController;
+import com.dipanjan.app.moviezone.bo.MovieDetailsBO;
 import com.dipanjan.app.moviezone.helper.NetworkCheck;
-import com.dipanjan.app.moviezone.model.Movie;
+import com.dipanjan.app.moviezone.model.DataModel;
+import com.dipanjan.app.moviezone.model.MovieSeries;
+import com.dipanjan.app.moviezone.util.Constant;
 import com.github.ybq.android.spinkit.style.ThreeBounce;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import info.dipanjan.app.R;
-
-import com.dipanjan.app.moviezone.app.AppController;
-import com.dipanjan.app.moviezone.helper.Helper;
-import com.dipanjan.app.moviezone.model.DataModel;
-import com.dipanjan.app.moviezone.model.SectionDataModel;
-import com.dipanjan.app.moviezone.util.Constant;
 
 public class MainActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
     private Integer URLIndexPosition=-1;
 
-
+    private ArrayList<MovieSeries> movieSeries;
     ArrayList<DataModel> dataModelArrayList=null;
 
     private ProgressBar progressBar;
     private RelativeLayout relativeLayout,relativeLayoutForMessageText;
     private CoordinatorLayout coordinatorLayout;
     private TextView messageText;
+    private MovieSeriesAdapter mAdapter;
+    private RecyclerView recyclerView;
 
     public MainActivity() {
         dataModelArrayList = new ArrayList<DataModel>();
@@ -69,17 +63,23 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.list_movie_activity);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         progressBar = (ProgressBar) findViewById(R.id.spin_kit);
+
         relativeLayout = (RelativeLayout) findViewById(R.id.spinKitLayout);
+
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
         relativeLayoutForMessageText = (RelativeLayout)findViewById(R.id.messageLayout);
         messageText = (TextView)findViewById(R.id.messageText);
-
         relativeLayoutForMessageText.setVisibility(View.GONE);
         messageText.setVisibility(View.GONE);
+        relativeLayout.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.VISIBLE);
 
         ThreeBounce threeBounce = new ThreeBounce();
         progressBar.setIndeterminateDrawable(threeBounce);
@@ -95,6 +95,113 @@ public class MainActivity extends AppCompatActivity {
 
         startUpActivity();
 
+
+
+    }
+
+
+
+    public void displayFetchedMovieItemAsList() {
+
+        progressBar.setVisibility(View.GONE);
+        relativeLayout.setVisibility(View.GONE);
+        mAdapter = new MovieSeriesAdapter(getApplicationContext(), movieSeries);
+
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getApplicationContext(), 2);
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(10), true));
+        recyclerView.setAdapter(mAdapter);
+
+        recyclerView.addOnItemTouchListener(new GalleryAdapter.RecyclerTouchListener(getApplicationContext(), recyclerView, new GalleryAdapter.ClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                /*Bundle bundle = new Bundle();
+                bundle.putSerializable("images", movies);
+                bundle.putInt("position", position);*/
+
+                /*FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                SlideshowDialogFragment newFragment = SlideshowDialogFragment.newInstance();
+                newFragment.setArguments(bundle);
+                newFragment.show(ft, "slideshow");*/
+
+                Intent intent = new Intent(getApplicationContext(),ListMovieSeriesItems.class);
+                intent.putExtra("MOVIESERIES", movieSeries.get(position));
+                intent.putExtra("URLIndexPosition", URLIndexPosition);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                getApplicationContext().startActivity(intent);
+
+                //Toast.makeText(getApplicationContext(),"come here "+movieSeries.get(position).getMovieSeriesTitle(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onLongClick(View view, int position) {
+
+            }
+        }));
+
+    }
+
+
+    public void callWebServiceTofetchMovieList(String url){
+
+        StringRequest strReq = new StringRequest(Request.Method.GET,
+                url, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+
+                //pDialog.hide();
+                //movies.clear();
+                movieSeries = MovieDetailsBO.loadMovieSeriesContents(response.toString(),URLIndexPosition);
+                displayFetchedMovieItemAsList();
+
+
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                //pDialog.hide();
+            }
+        });
+
+
+        // Adding request to request queue
+        strReq.setShouldCache(false);
+        AppController.getInstance().addToRequestQueue(strReq);
+    }
+
+    public void startUpActivity(){
+        if(isNetworkAvailable()){
+
+            NetworkCheck networkCheck = (NetworkCheck) new NetworkCheck(new NetworkCheck.AsyncResponse() {
+                @Override
+                public Integer processFinish(Integer URLIndexPos) {
+                    if(URLIndexPos!=1){
+                        URLIndexPosition=URLIndexPos;
+                        relativeLayoutForMessageText.setVisibility(View.GONE);
+                        messageText.setVisibility(View.GONE);
+                        progressBar.setVisibility(View.VISIBLE);
+                        callWebServiceTofetchMovieList(Constant.JSON_URL);
+
+                    }else{
+                        relativeLayout.setVisibility(View.GONE);
+                        relativeLayoutForMessageText.setVisibility(View.VISIBLE);
+                        messageText.setVisibility(View.VISIBLE);
+                        messageText.setText(NetworkCheck.DISPLAY_MSG_IF_HOST_NOT_RESOLVE);
+                        displayNetworkInfoAlert(coordinatorLayout, NetworkCheck.DISPLAY_SNACBAR_MSG_IF_HOST_NOT_RESOLVE, Constant.SNACKBAR_DISPALY_MODE_FAILURE);
+                    }
+                    return null;
+                }
+            }).execute();
+
+
+        }else {
+            progressBar.setVisibility(View.GONE);
+            displayNetworkInfoAlert(coordinatorLayout, Constant.MESSAGE_NETWORK_NOT_AVIALABLE, Constant.SNACKBAR_DISPALY_MODE_FAILURE);
+        }
 
 
     }
@@ -120,12 +227,11 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public Integer processFinish(Integer URLIndexPos) {
                             if(URLIndexPos!=-1){
-
-                                URLIndexPosition = URLIndexPos;
+                                URLIndexPosition=URLIndexPos;
                                 relativeLayoutForMessageText.setVisibility(View.GONE);
                                 messageText.setVisibility(View.GONE);
                                 progressBar.setVisibility(View.VISIBLE);
-                                populateMovieData(URLIndexPos);
+                                callWebServiceTofetchMovieList(Constant.JSON_URL);
                             }else{
                                 relativeLayout.setVisibility(View.GONE);
                                 relativeLayoutForMessageText.setVisibility(View.VISIBLE);
@@ -149,46 +255,19 @@ public class MainActivity extends AppCompatActivity {
         snackBar.show();
     }
 
-
-
-    private void startUpActivity(){
-
-        if(isNetworkAvailable()){
-
-            NetworkCheck networkCheck = (NetworkCheck) new NetworkCheck(new NetworkCheck.AsyncResponse() {
-                @Override
-                public Integer processFinish(Integer URLIndexPos) {
-                    if(URLIndexPos!=-1){
-                        Toast.makeText(getApplicationContext(),URLIndexPos+"---"+Constant.BASE_URL[URLIndexPos],Toast.LENGTH_SHORT).show();
-                        URLIndexPosition=URLIndexPos;
-                        relativeLayoutForMessageText.setVisibility(View.GONE);
-                        messageText.setVisibility(View.GONE);
-                        progressBar.setVisibility(View.VISIBLE);
-                        populateMovieData(URLIndexPos);
-                    }else{
-                        relativeLayout.setVisibility(View.GONE);
-                        relativeLayoutForMessageText.setVisibility(View.VISIBLE);
-                        messageText.setVisibility(View.VISIBLE);
-                        messageText.setText(NetworkCheck.DISPLAY_MSG_IF_HOST_NOT_RESOLVE);
-                        displayNetworkInfoAlert(coordinatorLayout, NetworkCheck.DISPLAY_SNACBAR_MSG_IF_HOST_NOT_RESOLVE, Constant.SNACKBAR_DISPALY_MODE_FAILURE);
-                    }
-                    return null;
-                }
-            }).execute();
-
-
-        }else {
-            progressBar.setVisibility(View.GONE);
-            displayNetworkInfoAlert(coordinatorLayout, Constant.MESSAGE_NETWORK_NOT_AVIALABLE, Constant.SNACKBAR_DISPALY_MODE_FAILURE);
-        }
+    private int dpToPx(int dp) {
+        Resources r = getResources();
+        return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
     }
 
 
-    @Override
-    protected void onPostResume() {
-        super.onPostResume();
-        //startUpActivity();
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -206,211 +285,15 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.search_movies) {
-            openDialog();
+            Intent intent = new Intent(getApplicationContext(),ListLikedMovieItems.class);
+            intent.putExtra("URLIndexPosition", URLIndexPosition);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getApplicationContext().startActivity(intent);
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
-
-    public void displayFetchedMovieItemAsList() {
-
-        progressBar.setVisibility(View.GONE);
-        relativeLayout.setVisibility(View.GONE);
-        RecyclerView my_recycler_view = (RecyclerView) findViewById(R.id.my_recycler_view);
-
-        my_recycler_view.setHasFixedSize(false);
-
-        RecyclerViewDataAdapter adapter = new RecyclerViewDataAdapter(this, dataModelArrayList,URLIndexPosition);
-
-        my_recycler_view.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-
-        my_recycler_view.setAdapter(adapter);
-
-    }
-
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (dialogFragment != null) {
-            dialogFragment.dismiss();
-        }
-    }
-
-
-    private final Object lock = new Object();
-    int flag = 0;
-
-    public void makeCount() {
-
-        synchronized (lock) {
-            flag++;
-
-            if (flag == Constant.IDENTIFIER_LIST.length+1) {
-
-                displayFetchedMovieItemAsList();
-            }
-        }
-    }
-
-    private void populateMovieData(Integer URLIndexPos) {
-        Log.d("CALL","Y");
-        initialisedListItems(URLIndexPos);
-        for (DataModel dataModel : dataModelArrayList) {
-            if (dataModel != null) {
-                fetchMovieData(dataModel);
-            }
-        }
-
-        populateMovieGerne(URLIndexPos);
-
-    }
-
-
-    private void populateMovieGerne(Integer URLIndexPos) {
-        DataModel dataModel = new DataModel();
-        SectionDataModel sectionDataModel = new SectionDataModel();
-        sectionDataModel.setHeaderTitle("Browse By Genre");
-        sectionDataModel.setMovieIdentifier(Constant.MovieCategory.MOVIE_GERNE);
-        dataModel.setSectionDataModel(sectionDataModel);
-        List<String> movieGerneList = Arrays.asList(getResources().getStringArray(R.array.genre_array_recycle_view));
-        ArrayList<Movie> movieGenreList = new ArrayList<Movie>();
-        for (String movieGerne : movieGerneList) {
-            if(movieGenreList.size()!= Constant.MAX_ITEM_EACH_ROW) {
-                Movie movie = new Movie();
-                movie.setTitle(movieGerne);
-                movie.setId(movieGerne.toLowerCase());
-                movie.setMediumCoverImage(null);
-                movie.setCategoryDescriptorTab(true);
-                movieGenreList.add(movie);
-            }else{
-                break;
-            }
-        }
-        dataModel.getSectionDataModel().setAllItemsInSection(movieGenreList);
-        dataModelArrayList.add(2,dataModel);
-        makeCount();
-    }
-
-
-    public ArrayList<Movie> populateMovieList(String stg, ArrayList<Movie> movies, DataFetchListener dataFetchListener) {
-        try {
-            // Toast.makeText(getApplicationContext(),stg,Toast.LENGTH_SHORT).show();
-            JSONObject jObj = new JSONObject(stg);
-            String city = jObj.getString("status_message");
-            System.out.println(city);
-
-            JSONObject jObj1 = jObj.getJSONObject("data");
-            JSONArray jArr = jObj1.getJSONArray("movies");
-            for (int i = 0; i < jArr.length(); i++) {
-                Movie movie = new Movie();
-                JSONObject obj = jArr.getJSONObject(i);
-                movie.setMediumCoverImage(obj.getString("large_cover_image"));
-                movie.setTitle(obj.getString("title"));
-                movie.setRating(obj.getString("rating"));
-                movie.setYear(obj.getString("year"));
-                movie.setRuntime(obj.getString("runtime"));
-                movie.setId(obj.getString("id"));
-                movie.setCategoryDescriptorTab(false);
-
-                movies.add(movie);
-            }
-
-
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-        dataFetchListener.onDataFetchSuccessfull();
-        return movies;
-    }
-
-
-    private ArrayList<DataModel> initialisedListItems(Integer URLIndexPos) {
-
-        for (int index = 0; index < Constant.IDENTIFIER_LIST.length; index++) {
-            ArrayList<Movie> movieArr = new ArrayList<Movie>();
-            DataModel dataModel = new DataModel(Helper.generateURL(URLIndexPos,Constant.URL_LINK[index]), Constant.IDENTIFIER_LIST[index], Constant.IDENTIFIER_LIST[index], Constant.QUERY_PARAMETER[index], Helper.getFullHeaderName(Constant.HEADER_LIST[index]));
-            SectionDataModel sectionDataModel = new SectionDataModel();
-            sectionDataModel.setHeaderTitle(Helper.getFullHeaderName(Constant.HEADER_LIST[index]));
-            sectionDataModel.setMovieIdentifier(Constant.IDENTIFIER_LIST[index]);
-            sectionDataModel.setAllItemsInSection(movieArr);
-            dataModel.setSectionDataModel(sectionDataModel);
-            dataModelArrayList.add(dataModel);
-
-        }
-        return dataModelArrayList;
-    }
-
-
-    private int fetchMovieData(final DataModel dataModel) {
-        StringRequest strReq = new StringRequest(Request.Method.GET,
-                dataModel.getUrlLink(), new Response.Listener<String>() {
-
-            @Override
-            public void onResponse(String response) {
-                try{
-                Uri uri = Uri.parse(dataModel.getUrlLink());
-                String queryParameter = uri.getQueryParameter(dataModel.getQueryParameter());
-                if (queryParameter != null) {
-                    if (queryParameter.equalsIgnoreCase(dataModel.getCategory())) {
-                        populateMovieList(response.toString(), dataModel.getSectionDataModel().getAllItemsInSection(), new DataFetchListener() {
-                            @Override
-                            public void onDataFetchSuccessfull() {
-                                makeCount();
-                            }
-                        });
-
-
-                    }
-                }
-
-            }catch(Exception exception){
-                exception.printStackTrace();
-            }
-            }
-        }, new Response.ErrorListener() {
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                try{
-                   // Toast.makeText(getApplicationContext(),"Could Not connect",Toast.LENGTH_SHORT).show();
-                }catch (Exception ex){
-                    ex.printStackTrace();
-                }
-
-
-            }
-        });
-
-        strReq.setShouldCache(false);
-        AppController.getInstance().addToRequestQueue(strReq);
-        return 1;
-    }
-
-    DialogFragment dialogFragment;
-
-    private void openDialog() {
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        Fragment prev = getFragmentManager().findFragmentByTag("dialog");
-        if (prev != null) {
-            ft.remove(prev);
-        }
-        ft.addToBackStack(null);
-        dialogFragment = new SearchDialogFragment();
-        dialogFragment.show(ft, "dialog");
-    }
-
-
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
-
 
 
 }
