@@ -19,6 +19,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -196,6 +197,7 @@ public class ListMovieItem extends AppCompatActivity {
         //pDialog.setMessage("Fetching Movie...");
         //pDialog.show();
 
+        Log.d("@@@@@@@@@@@@ URl",""+URLIndexPosition);
 
         // Tag used to cancel the request
         String  tag_string_req = "string_req";
@@ -252,50 +254,55 @@ public class ListMovieItem extends AppCompatActivity {
         snackBar.setAction("Try Again", new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(isNetworkAvailable()){
-                    NetworkCheck networkCheck = (NetworkCheck) new NetworkCheck(new NetworkCheck.AsyncResponse() {
-                        @Override
-                        public Integer processFinish(Integer URLIndexPos) {
-                            if(URLIndexPos!=-1){
-                                URLIndexPosition=URLIndexPos;
-                                relativeLayoutForMessageText.setVisibility(View.GONE);
-                                messageText.setVisibility(View.GONE);
-                                progressBar.setVisibility(View.VISIBLE);
-                                fetchImages(Helper.generateURL(URLIndexPos,endpoint) + pageCount, new ListFetchListerner() {
-                                    @Override
-                                    public void onSuccessFullFetch() {
-                                        //  Toast.makeText(getApplicationContext(),"come dddd "+movieCount,Toast.LENGTH_SHORT).show();
-                                        if(getIntent().getStringExtra("SEARCH")!=null){
-                                            if(movieCount>1){
-                                                getSupportActionBar().setTitle(movieCount+" Movies found");
-                                            }else{
-                                                getSupportActionBar().setTitle(movieCount+" Movie found");
-                                            }
-
-                                        }
-                                    }
-                                });
-                            }else{
-                                relativeLayout.setVisibility(View.GONE);
-                                relativeLayoutForMessageText.setVisibility(View.VISIBLE);
-                                messageText.setVisibility(View.VISIBLE);
-                                messageText.setText(NetworkCheck.DISPLAY_MSG_IF_HOST_NOT_RESOLVE);
-                                displayNetworkInfoAlert(coordinatorLayout, NetworkCheck.DISPLAY_SNACBAR_MSG_IF_HOST_NOT_RESOLVE, Constant.SNACKBAR_DISPALY_MODE_FAILURE);
-                            }
-                            return null;
-                        }
-                    }).execute();
-                    snackBar.dismiss();
-                    relativeLayout.setVisibility(View.VISIBLE);
-                    progressBar.setVisibility(View.VISIBLE);
-                }else{
-                    progressBar.setVisibility(View.GONE);
-                    displayNetworkInfoAlert(coordinatorLayout, Constant.MESSAGE_NETWORK_NOT_AVIALABLE, Constant.SNACKBAR_DISPALY_MODE_FAILURE);
-                }
+                retryNetworkConnection();
+                snackBar.dismiss();
             }
         });
 
         snackBar.show();
+    }
+
+    private void retryNetworkConnection(){
+        if(isNetworkAvailable()){
+            NetworkCheck networkCheck = (NetworkCheck) new NetworkCheck(new NetworkCheck.AsyncResponse() {
+                @Override
+                public Integer processFinish(Integer URLIndexPos) {
+                    if(URLIndexPos!=-1){
+                        URLIndexPosition=URLIndexPos;
+                        relativeLayoutForMessageText.setVisibility(View.GONE);
+                        messageText.setVisibility(View.GONE);
+                        progressBar.setVisibility(View.VISIBLE);
+                        fetchImages(Helper.generateURL(URLIndexPos,endpoint) + pageCount, new ListFetchListerner() {
+                            @Override
+                            public void onSuccessFullFetch() {
+                                //  Toast.makeText(getApplicationContext(),"come dddd "+movieCount,Toast.LENGTH_SHORT).show();
+                                if(getIntent().getStringExtra("SEARCH")!=null){
+                                    if(movieCount>1){
+                                        getSupportActionBar().setTitle(movieCount+" Movies found");
+                                    }else{
+                                        getSupportActionBar().setTitle(movieCount+" Movie found");
+                                    }
+
+                                }
+                            }
+                        });
+                    }else{
+                        relativeLayout.setVisibility(View.GONE);
+                        relativeLayoutForMessageText.setVisibility(View.VISIBLE);
+                        messageText.setVisibility(View.VISIBLE);
+                        messageText.setText(NetworkCheck.DISPLAY_MSG_IF_HOST_NOT_RESOLVE);
+                        displayNetworkInfoAlert(coordinatorLayout, NetworkCheck.DISPLAY_SNACBAR_MSG_IF_HOST_NOT_RESOLVE, Constant.SNACKBAR_DISPALY_MODE_FAILURE);
+                    }
+                    return null;
+                }
+            }).execute();
+
+            relativeLayout.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.VISIBLE);
+        }else{
+            progressBar.setVisibility(View.GONE);
+            displayNetworkInfoAlert(coordinatorLayout, Constant.MESSAGE_NETWORK_NOT_AVIALABLE, Constant.SNACKBAR_DISPALY_MODE_FAILURE);
+        }
     }
 
 
@@ -307,6 +314,7 @@ public class ListMovieItem extends AppCompatActivity {
     }
 
 
+    private int retryConnectionCount=0;
     private void startUpActivity(){
 
         if(isNetworkAvailable()){
@@ -335,11 +343,15 @@ public class ListMovieItem extends AppCompatActivity {
                         });
 
                     }else{
-                        relativeLayout.setVisibility(View.GONE);
+                        if(retryConnectionCount==0){
+                            retryNetworkConnection();
+                            retryConnectionCount++;
+                        }
+                        /*relativeLayout.setVisibility(View.GONE);
                         relativeLayoutForMessageText.setVisibility(View.VISIBLE);
                         messageText.setVisibility(View.VISIBLE);
                         messageText.setText(NetworkCheck.DISPLAY_MSG_IF_HOST_NOT_RESOLVE);
-                        displayNetworkInfoAlert(coordinatorLayout, NetworkCheck.DISPLAY_SNACBAR_MSG_IF_HOST_NOT_RESOLVE, Constant.SNACKBAR_DISPALY_MODE_FAILURE);
+                        displayNetworkInfoAlert(coordinatorLayout, NetworkCheck.DISPLAY_SNACBAR_MSG_IF_HOST_NOT_RESOLVE, Constant.SNACKBAR_DISPALY_MODE_FAILURE);*/
                     }
                     return null;
                 }
@@ -452,6 +464,13 @@ public class ListMovieItem extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
+        if (id == R.id.fav) {
+            Intent intent = new Intent(getApplicationContext(),ListLikedMovieItems.class);
+            intent.putExtra("URLIndexPosition", URLIndexPosition);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getApplicationContext().startActivity(intent);
+            return true;
+        }
         if (id == R.id.search_movies) {
             openDialog();
             return true;

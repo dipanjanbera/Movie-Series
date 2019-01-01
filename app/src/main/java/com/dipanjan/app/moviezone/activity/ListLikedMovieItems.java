@@ -1,11 +1,17 @@
 package com.dipanjan.app.moviezone.activity;
 
+import android.app.DialogFragment;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
@@ -13,6 +19,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -60,7 +68,9 @@ public class ListLikedMovieItems extends AppCompatActivity {
         setContentView(R.layout.list_movie_activity);
         sharedpreferences = getSharedPreferences(Constant.MyPREFERENCES, Context.MODE_PRIVATE);
         editor=sharedpreferences.edit();
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setTitleTextAppearance(this,R.style.CodeFont_Movie_Details_Headers);
 
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
@@ -83,7 +93,7 @@ public class ListLikedMovieItems extends AppCompatActivity {
 
         if (toolbar != null) {
             setSupportActionBar(toolbar);
-            toolbar.setTitle("G PlayStore");
+            toolbar.setTitle("My Favourite Movies");
 
         }
 
@@ -94,17 +104,17 @@ public class ListLikedMovieItems extends AppCompatActivity {
 
     }
 
-    @Override
+   /* @Override
     protected void onPostResume() {
         super.onPostResume();
        fetchLikedMovieDetails();
        if(mAdapter!=null){
-           mAdapter.notifyDataSetChanged();
+           //mAdapter.notifyDataSetChanged();
        }else{
-           displayFetchedMovieItemAsList();
+         //  displayFetchedMovieItemAsList();
        }
 
-    }
+    }*/
 
     @Override
     protected void onDestroy() {
@@ -116,6 +126,9 @@ public class ListLikedMovieItems extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         movies=null;
+        if (dialogFragment != null) {
+            dialogFragment.dismiss();
+        }
     }
 
     public void fetchLikedMovieDetails(){
@@ -127,7 +140,7 @@ public class ListLikedMovieItems extends AppCompatActivity {
             this.movies=movieList;
             if(this.movies!=null && this.movies.size()>0){
                 for(Movie movie:movies){
-                    movie.setMediumCoverImage(Constant.BASE_URL[getURLIndexPosition()]+movie.getBackgroundImage());
+                    movie.setMediumCoverImage(Constant.BASE_URL[getURLIndexPosition()]+movie.getMediumCoverImage());
                     Log.d("@@@@@@@@",movie.getMediumCoverImage());
                 }
             }
@@ -137,8 +150,11 @@ public class ListLikedMovieItems extends AppCompatActivity {
 
     public void startUpActivity(){
         fetchLikedMovieDetails();
-        if(movies!=null&&movies.size()>0){
+        if(movies!=null && movies.size()>0){
             displayFetchedMovieItemAsList();
+        }else{
+            displayAlert(coordinatorLayout,"No favourite movies added",Constant.SNACKBAR_DISPALY_MODE_FAILURE,"");
+            progressBar.setVisibility(View.GONE);
         }
     }
 
@@ -181,6 +197,73 @@ public class ListLikedMovieItems extends AppCompatActivity {
 
     }
 
+    public void displayAlert(final CoordinatorLayout coordinatorLayout, String msg, int displayMode, String actionText){
+        final Snackbar snackBar = Snackbar.make(coordinatorLayout,msg , Snackbar.LENGTH_INDEFINITE);
+        Snackbar.SnackbarLayout layout = (Snackbar.SnackbarLayout) snackBar.getView();
+        if(displayMode== Constant.SNACKBAR_DISPALY_MODE_SUCCESS){
+            layout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary));
+        }else if(displayMode== Constant.SNACKBAR_DISPALY_MODE_FAILURE){
+            layout.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.Color_Red));
+        }
+
+
+        /*TextView action = layout.findViewById(android.support.design.R.id.snackbar_action);
+        action.setMaxLines(2);
+        action.setTextColor(layout.getContext().getResources().getColor(android.R.color.black));
+        snackBar.setAction(actionText, new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setData(Uri.parse(
+                        "https://play.google.com/store/search?q=torrent download"));
+                getApplicationContext().startActivity(intent);
+            }
+        });*/
+
+        snackBar.show();
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu, menu);
+        MenuItem item = menu.findItem(R.id.fav);
+        item.setVisible(false);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.search_movies) {
+            openDialog();
+            return true;
+        }
+
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    DialogFragment dialogFragment;
+
+    private void openDialog() {
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        Fragment prev = getFragmentManager().findFragmentByTag("dialog");
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
+        dialogFragment = new SearchDialogFragment();
+        dialogFragment.show(ft, "dialog");
+    }
 
 
     private Integer getURLIndexPosition(){

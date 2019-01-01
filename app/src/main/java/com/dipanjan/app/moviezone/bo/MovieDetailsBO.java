@@ -60,7 +60,8 @@ public class MovieDetailsBO {
         movie.setYear(obj.getString(Constant.TagConstant.YEAR));
         movie.setLikeCount(obj.getString(Constant.TagConstant.LIKE));
         movie.setMpaRating(obj.getString(Constant.TagConstant.MPA_RATING));
-
+        movie.setMediumCoverImage(obj.getString(Constant.TagConstant.MEDIUM_COVER_IMAGE));
+        movie.setSmallCoverImage(obj.getString(Constant.TagConstant.SMALL_COVER_IMAGE));
         movie.setRating(obj.getString(Constant.TagConstant.RATING));
         movie.setRuntime(obj.getString(Constant.TagConstant.RUNTIME));
         movie.setDescriptionFull(obj.getString(Constant.TagConstant.DESCRIPTION_FULL));

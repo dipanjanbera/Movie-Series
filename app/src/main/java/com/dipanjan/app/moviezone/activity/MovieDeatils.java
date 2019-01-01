@@ -335,7 +335,7 @@ public class MovieDeatils extends AppCompatActivity {
                 }
                 if(!checkIfMovieAlreadyExistsAsLikedMovie(movieList)){
                     this.movie.setLikedMovie(true);
-                    this.movie.setBackgroundImage(this.movie.getBackgroundImage().substring(this.movie.getBackgroundImage().indexOf("/assets/images/")));
+                    this.movie.setMediumCoverImage(this.movie.getMediumCoverImage().substring(this.movie.getMediumCoverImage().indexOf("/assets/images/")));
                     movieList.add(this.movie);
                     json = gson.toJson(movieList);
                     editor.putString("likedMovies", json);

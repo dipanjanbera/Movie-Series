@@ -110,6 +110,13 @@ public class DownloadMovieAdapter extends RecyclerView.Adapter<DownloadMovieAdap
 
             if(torrent.getTorrentType().equals("web")||torrent.getTorrentType().equals("")){
                 holder.torrentType.setVisibility(View.INVISIBLE);
+            }else{
+                holder.torrentType.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        displayAlert(coordinatorLayout,"This is Blu-ray movie torrent", Constant.SNACKBAR_DISPALY_MODE_SUCCESS,"",Constant.SNACKBAR_DISPALY_MODE_SHORT,false);
+                    }
+                });
             }
         }
 
@@ -136,7 +143,7 @@ public class DownloadMovieAdapter extends RecyclerView.Adapter<DownloadMovieAdap
                 Log.e("TAG","yes act to handle");
             } else {
                 //Toast.makeText(c,"No Torrent client found to perform this task",Toast.LENGTH_SHORT).show();
-                displayAlert(coordinatorLayout,"No Torrent client found", Constant.SNACKBAR_DISPALY_MODE_FAILURE,"Download >");
+                displayAlert(coordinatorLayout,"No Torrent client found", Constant.SNACKBAR_DISPALY_MODE_FAILURE,"Download >",Constant.SNACKBAR_DISPALY_MODE_LONG,true);
 
 
             }
@@ -146,8 +153,18 @@ public class DownloadMovieAdapter extends RecyclerView.Adapter<DownloadMovieAdap
         }
     }
 
-    public void displayAlert(final CoordinatorLayout coordinatorLayout, String msg, int displayMode, String actionText){
-        final Snackbar snackBar = Snackbar.make(coordinatorLayout,msg , Snackbar.LENGTH_LONG);
+    public void displayAlert(final CoordinatorLayout coordinatorLayout, String msg, int displayMode, String actionText,int displayTime,boolean isActionTextRequired){
+        Snackbar snackBar = null;
+        if(displayTime==Constant.SNACKBAR_DISPALY_MODE_LONG){
+            snackBar = Snackbar.make(coordinatorLayout,msg , Snackbar.LENGTH_LONG);
+        }
+        if(displayTime==Constant.SNACKBAR_DISPALY_MODE_SHORT){
+            snackBar = Snackbar.make(coordinatorLayout,msg , Snackbar.LENGTH_SHORT);
+        }
+        if(displayTime==Constant.SNACKBAR_DISPALY_MODE_INFINITE){
+            snackBar = Snackbar.make(coordinatorLayout,msg , Snackbar.LENGTH_INDEFINITE);
+        }
+
         Snackbar.SnackbarLayout layout = (Snackbar.SnackbarLayout) snackBar.getView();
         if(displayMode== Constant.SNACKBAR_DISPALY_MODE_SUCCESS){
             layout.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary));
@@ -156,19 +173,22 @@ public class DownloadMovieAdapter extends RecyclerView.Adapter<DownloadMovieAdap
         }
 
 
-        TextView action = layout.findViewById(android.support.design.R.id.snackbar_action);
-        action.setMaxLines(2);
-        action.setTextColor(layout.getContext().getResources().getColor(android.R.color.black));
-        snackBar.setAction(actionText, new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.setData(Uri.parse(
-                        "https://play.google.com/store/search?q=torrent download"));
-                context.startActivity(intent);
-            }
-        });
+        if(isActionTextRequired){
+            TextView action = layout.findViewById(android.support.design.R.id.snackbar_action);
+            action.setMaxLines(2);
+            action.setTextColor(layout.getContext().getResources().getColor(android.R.color.black));
+            snackBar.setAction(actionText, new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.setData(Uri.parse(
+                            "https://play.google.com/store/search?q=torrent download"));
+                    context.startActivity(intent);
+                }
+            });
+        }
+
 
         snackBar.show();
     }

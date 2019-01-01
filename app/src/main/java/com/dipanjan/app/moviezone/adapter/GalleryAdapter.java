@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -81,10 +82,23 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.MyViewHo
         Movie movie = movies.get(position);
         ThreeBounce threeBounce = new ThreeBounce();
         holder.progressBar.setIndeterminateDrawable(threeBounce);
+        RequestOptions myOptions=null;
+        if(movie.isLikedMovie()){
+            myOptions = new RequestOptions()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL);
+        }else{
+            myOptions = new RequestOptions()
+                    .diskCacheStrategy(DiskCacheStrategy.NONE);
+        }
 
-        RequestOptions myOptions = new RequestOptions()
-          .diskCacheStrategy(DiskCacheStrategy.NONE);
+        /*String coverImage = null;
+        if(movie.isLikedMovie()){
+            coverImage=movie.getSmallCoverImage();
+        }else{
+            coverImage=movie.getMediumCoverImage();
+        }*/
 
+        Log.d("@@@@@@@@@@@@",movie.getMediumCoverImage());
         Glide.with(mContext).load(movie.getMediumCoverImage())
                 .transition(withCrossFade(700))
                 .apply(myOptions)

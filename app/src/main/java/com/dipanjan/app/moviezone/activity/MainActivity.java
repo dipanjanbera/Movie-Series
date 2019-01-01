@@ -4,6 +4,7 @@ import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -135,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                             return null;
                         }
-                    });
+                    }).execute();
                     snackBar.dismiss();
                     relativeLayout.setVisibility(View.VISIBLE);
                     progressBar.setVisibility(View.VISIBLE);
@@ -159,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public Integer processFinish(Integer URLIndexPos) {
                     if(URLIndexPos!=-1){
-                        //Toast.makeText(getApplicationContext(),URLIndexPos+"---"+Constant.BASE_URL[URLIndexPos],Toast.LENGTH_SHORT).show();
+                       // Toast.makeText(getApplicationContext(),URLIndexPos+"---"+Constant.BASE_URL[URLIndexPos],Toast.LENGTH_SHORT).show();
                         URLIndexPosition=URLIndexPos;
                         relativeLayoutForMessageText.setVisibility(View.GONE);
                         messageText.setVisibility(View.GONE);
@@ -174,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     return null;
                 }
-            });
+            }).execute();
 
 
         }else {
@@ -205,6 +206,14 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
+        if (id == R.id.fav) {
+            Intent intent = new Intent(getApplicationContext(),ListLikedMovieItems.class);
+            Log.d("@@@@@@@@ ",""+URLIndexPosition);
+            intent.putExtra("URLIndexPosition", URLIndexPosition);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getApplicationContext().startActivity(intent);
+            return true;
+        }
         if (id == R.id.search_movies) {
             openDialog();
             return true;
@@ -376,7 +385,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 try{
-                    Toast.makeText(getApplicationContext(),"Connection Error",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),"Could Not connect",Toast.LENGTH_SHORT).show();
                 }catch (Exception ex){
                     ex.printStackTrace();
                 }

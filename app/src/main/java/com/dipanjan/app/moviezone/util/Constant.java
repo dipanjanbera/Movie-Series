@@ -11,7 +11,7 @@ public interface Constant {
     // String BASE_URL = "https://yts.am";
     //String BASE_URL = "https://ytss.unblocked.ms/";
     //String BASE_URL = "https://yts.unblock.ws/";
-    String[] BASE_URL = {"https://yts.am", "https://ytss.unblocked.ms/", "https://yts.unblock.ws/"};
+    String[] BASE_URL= {"https://ytss.unblocked.si","https://ytss.unblocked.ms","https://yts.unblock.ws","https://yts.am"};
 
 
     String TAG = "Application";
@@ -156,6 +156,10 @@ public interface Constant {
     String[] colorArr = {"#fb8c00", "#f4e003", "#ffd600", "#ff6d00", "#ab47bc", "#aeea00"};
     int SNACKBAR_DISPALY_MODE_SUCCESS = 1;
     int SNACKBAR_DISPALY_MODE_FAILURE = 2;
+    int SNACKBAR_DISPALY_MODE_SHORT = 3;
+    int SNACKBAR_DISPALY_MODE_LONG = 4;
+    int SNACKBAR_DISPALY_MODE_INFINITE = 5;
+
     String MESSAGE_NETWORK_NOT_AVIALABLE = "Network Connection not Available";
     String SUBTITLE_URL = "http://www.yifysubtitles.com/movie-imdb/";
 
