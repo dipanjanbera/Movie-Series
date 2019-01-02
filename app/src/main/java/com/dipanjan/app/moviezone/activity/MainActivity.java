@@ -207,16 +207,22 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.fav) {
-            Intent intent = new Intent(getApplicationContext(),ListLikedMovieItems.class);
-            Log.d("@@@@@@@@ ",""+URLIndexPosition);
-            intent.putExtra("URLIndexPosition", URLIndexPosition);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            getApplicationContext().startActivity(intent);
-            return true;
+            if(URLIndexPosition!=-1){
+                Intent intent = new Intent(getApplicationContext(),ListLikedMovieItems.class);
+                Log.d("@@@@@@@@ ",""+URLIndexPosition);
+                intent.putExtra("URLIndexPosition", URLIndexPosition);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                getApplicationContext().startActivity(intent);
+                return true;
+            }
+
         }
         if (id == R.id.search_movies) {
-            openDialog();
-            return true;
+            if(URLIndexPosition!=-1){
+                openDialog();
+                return true;
+            }
+
         }
 
         return super.onOptionsItemSelected(item);
