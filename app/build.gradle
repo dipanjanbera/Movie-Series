@@ -1,15 +1,16 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
+
 android {
     compileSdkVersion 26
 
     defaultConfig {
-        applicationId "com.dipanjan.app.moviezone"
+        applicationId "com.dipanjan.app.ytsyifyhdmovietorrentdownloader"
         minSdkVersion 16
         targetSdkVersion 26
-        versionCode 6
-        versionName "1.4"
+        versionCode 1
+        versionName "1.0"
 
     }
     buildTypes {
@@ -63,7 +64,18 @@ dependencies {
 
 
 
+    implementation 'com.google.firebase:firebase-core:16.0.1'
+
+    compile 'com.google.android.gms:play-services-analytics:16.0.1'
+
+    implementation 'com.google.firebase:firebase-config:16.0.0'
+
+
+
+
+
 }
+apply plugin: 'com.google.gms.google-services'
 repositories {
     mavenCentral()
 }

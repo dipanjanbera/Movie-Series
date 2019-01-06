@@ -6,18 +6,14 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
 
-
-    <uses-permission android:name="android.permission.VIBRATE"/>
-
-
     <application
-        android:name="com.dipanjan.app.moviezone.app.AppController"
+        android:name="com.dipanjan.app.ytsyifyhdmovietorrentdownloader.app.AppController"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.dipanjan.app.moviezone.activity.MainActivity"
+        <activity android:name="com.dipanjan.app.ytsyifyhdmovietorrentdownloader.activity.MainActivity"
             android:screenOrientation="portrait">
 
             <intent-filter>
@@ -28,33 +24,34 @@
 
         </activity>
         <activity
-        android:name="com.dipanjan.app.moviezone.activity.ListMovieItem"
+        android:name="com.dipanjan.app.ytsyifyhdmovietorrentdownloader.activity.ListMovieItem"
             android:screenOrientation="portrait"
         android:label="@string/app_name" />
 
         <activity
-        android:name="com.dipanjan.app.moviezone.activity.MovieDeatils"
+        android:name="com.dipanjan.app.ytsyifyhdmovietorrentdownloader.activity.MovieDeatils"
             android:screenOrientation="portrait"
             android:label=""
             />
 
         <activity
-            android:name="com.dipanjan.app.moviezone.activity.YoutubeVideoPlayer"
+            android:name="com.dipanjan.app.ytsyifyhdmovietorrentdownloader.activity.YoutubeVideoPlayer"
             android:screenOrientation="landscape"
             android:label="@string/app_name" />
 
+
         <activity
-            android:name="com.dipanjan.app.moviezone.activity.MovieGerneListLayout"
+            android:name="com.dipanjan.app.ytsyifyhdmovietorrentdownloader.activity.MovieGerneListLayout"
             android:screenOrientation="portrait"
             android:label="@string/app_name" />
 
         <activity
-            android:name="com.dipanjan.app.moviezone.activity.ListMovieSeriesItems"
+            android:name="com.dipanjan.app.ytsyifyhdmovietorrentdownloader.activity.ListMovieSeriesItems"
             android:screenOrientation="portrait"
             android:label="@string/app_name" />
 
         <activity
-            android:name="com.dipanjan.app.moviezone.activity.ListLikedMovieItems"
+            android:name="com.dipanjan.app.ytsyifyhdmovietorrentdownloader.activity.ListLikedMovieItems"
             android:screenOrientation="portrait"
             android:label="@string/app_name" />
 
@@ -66,7 +63,34 @@
             android:screenOrientation="sensor"
             android:theme="@style/FinestWebViewTheme.Light"/>
 
-        <activity android:name="com.dipanjan.app.moviezone.activity.WebViewActivity"/>
+        <activity android:name="com.dipanjan.app.ytsyifyhdmovietorrentdownloader.activity.WebViewActivity"/>
+
+        <receiver
+            android:name="com.google.android.gms.analytics.AnalyticsReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="com.google.android.gms.analytics.ANALYTICS_DISPATCH" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name="com.google.android.gms.analytics.AnalyticsService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!--
+             Optionally, register CampaignTrackingReceiver and CampaignTrackingService to enable
+             installation campaign reporting
+        -->
+        <receiver
+            android:name="com.google.android.gms.analytics.CampaignTrackingReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.android.vending.INSTALL_REFERRER" />
+            </intent-filter>
+        </receiver>
+
+        <service android:name="com.google.android.gms.analytics.CampaignTrackingService" />
     </application>
 
 

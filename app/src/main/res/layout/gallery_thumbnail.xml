@@ -102,14 +102,15 @@
 
                     <TextView
                         android:id="@+id/textView17"
-                        style="@style/CodeFont_Movie_Title_DESCRIPTION"
+
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true"
                         android:layout_centerVertical="true"
                         android:maxLines="1"
-
+                        android:textSize="12dp"
+                        style="@style/CodeFont_Movie_Title_DESCRIPTION"
                         android:text="Ghjj hzbhc njhhczx njksn" />
                 </RelativeLayout>
 
